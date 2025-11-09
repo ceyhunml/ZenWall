@@ -1,0 +1,84 @@
+//
+//  CustomTabBar.swift
+//  ZenWall
+//
+//  Created by Ceyhun Məmmədli on 09.11.25.
+//
+
+import Foundation
+import UIKit
+
+final class CustomTabBar: UITabBarController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupTabBarAppearance()
+        setupViewControllers()
+    }
+    
+    private func setupTabBarAppearance() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        
+        // 🎨 Arxa plan rəngi (sənin screenshotdakı kimi tünd yaşıl)
+        appearance.backgroundColor = UIColor(red: 0.10, green: 0.20, blue: 0.15, alpha: 1.0)
+        
+        // 🔸 Seçilmiş və seçilməmiş icon/text rəngləri
+        let selectedColor = UIColor.white
+        let unselectedColor = UIColor(red: 0.58, green: 0.74, blue: 0.65, alpha: 1.0) // Sönük mint tonu
+        
+        appearance.stackedLayoutAppearance.selected.iconColor = selectedColor
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: selectedColor,
+            .font: UIFont.systemFont(ofSize: 12, weight: .medium)
+        ]
+        
+        appearance.stackedLayoutAppearance.normal.iconColor = unselectedColor
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: unselectedColor,
+            .font: UIFont.systemFont(ofSize: 12, weight: .medium)
+        ]
+        
+        // 🔹 Kənar xətləri gizlət
+        appearance.shadowColor = .clear
+        
+        tabBar.standardAppearance = appearance
+        tabBar.scrollEdgeAppearance = appearance
+        
+        tabBar.isTranslucent = false
+        tabBar.tintColor = selectedColor
+        tabBar.unselectedItemTintColor = unselectedColor
+    }
+    
+    private func setupViewControllers() {
+        // 🔸 Home
+        let homeVC = UINavigationController(rootViewController: HomeViewController())
+        homeVC.tabBarItem = UITabBarItem(
+            title: "Home",
+            image: UIImage(systemName: "house"),
+            selectedImage: UIImage(systemName: "house.fill")
+        )
+        
+        // 🔸 Categories
+        let categoriesVC = UINavigationController(rootViewController: CategoriesViewController())
+        categoriesVC.tabBarItem = UITabBarItem(
+            title: "Categories",
+            image: UIImage(systemName: "circle.grid.2x2"),
+            selectedImage: UIImage(systemName: "circle.grid.2x2.fill")
+        )
+        
+        // 🔸 Favorites
+        let favoritesVC = UIViewController()
+        favoritesVC.view.backgroundColor = .systemBackground
+        favoritesVC.tabBarItem = UITabBarItem(title: "Favorites",
+                                              image: UIImage(systemName: "heart"),
+                                              selectedImage: UIImage(systemName: "heart.fill"))
+        
+        let profileVC = UIViewController()
+        profileVC.view.backgroundColor = .systemBackground
+        profileVC.tabBarItem = UITabBarItem(title: "Profile",
+                                            image: UIImage(systemName: "person"),
+                                            selectedImage: UIImage(systemName: "person.fill"))
+        
+        setViewControllers([homeVC, categoriesVC, favoritesVC, profileVC], animated: false)
+    }
+}
