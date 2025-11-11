@@ -10,21 +10,18 @@ import Alamofire
 
 final class NetworkingHelper {
     
-    private let baseURL = "https://api.unsplash.com"
-    
-    let headers: HTTPHeaders = [
-        "Authorization": "Client-ID YOUR_ACCESS_KEY",
-        "Accept-Version": "v1"
-    ]
-    
     static let shared = NetworkingHelper()
     private init() {}
+    
+    private let baseURL = "https://api.unsplash.com"
+    
+    private let accessKey = "Z09rq8KTi5ae-4L0D3sAJ8ygjImt6kxFsd1iVtLBhdI"
+    
+    var headers: HTTPHeaders {
+        ["Authorization": "Client-ID \(accessKey)"]
+    }
     
     func configureURL(endpoint: String) -> String {
         baseURL + endpoint
     }
-    
-//    func configureImageURL(path: String, ImageSize: ImageSize) -> String {
-//        imageBaseURL + ImageSize.rawValue + path
-//    }
 }
