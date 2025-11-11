@@ -10,9 +10,12 @@ import UIKit
 
 final class CustomSearchBar: UIView {
     
+    // MARK: - Public properties
     var text: String {
         textField.text ?? ""
     }
+    
+    var onTextChanged: ((String) -> Void)?
     
     // MARK: - UI
     private let iconImageView: UIImageView = {
@@ -44,13 +47,16 @@ final class CustomSearchBar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
+        setupActions()
     }
     
+    // MARK: - Setup
     private func setupUI() {
         backgroundColor = UIColor(red: 0.12, green: 0.23, blue: 0.19, alpha: 1.0)
         layer.masksToBounds = true
@@ -74,11 +80,21 @@ final class CustomSearchBar: UIView {
         ])
     }
     
+    private func setupActions() {
+        textField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
+    }
+    
+    @objc private func textDidChange() {
+        onTextChanged?(textField.text ?? "")
+    }
+    
+    // MARK: - Layout
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.height / 2
     }
     
+    // MARK: - Public
     func setDelegate(_ delegate: UITextFieldDelegate?) {
         textField.delegate = delegate
     }

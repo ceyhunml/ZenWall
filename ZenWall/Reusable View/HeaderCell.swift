@@ -10,8 +10,10 @@ import UIKit
 
 final class HeaderCell: UICollectionViewCell {
     
+    // MARK: - Callback
     var onSearch: ((String) -> Void)?
     
+    // MARK: - UI
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "ZenWall"
@@ -29,22 +31,26 @@ final class HeaderCell: UICollectionViewCell {
         btn.tintColor = UIColor(white: 1.0, alpha: 0.85)
         btn.contentVerticalAlignment = .fill
         btn.contentHorizontalAlignment = .fill
+        btn.addTarget(self, action: #selector(searchTapped), for: .touchUpInside)
         return btn
     }()
     
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setupSearchEvents()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Setup UI
     private func setupUI() {
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(searchBar)
-        contentView.addSubview(searchTapButton)
+        addSubview(titleLabel)
+        addSubview(searchBar)
+        addSubview(searchTapButton)
         
         searchBar.setDelegate(self)
         
@@ -53,26 +59,36 @@ final class HeaderCell: UICollectionViewCell {
         searchTapButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
             
             searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            searchBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            searchBar.leadingAnchor.constraint(equalTo: leadingAnchor),
             searchBar.trailingAnchor.constraint(equalTo: searchTapButton.leadingAnchor, constant: -8),
             searchBar.heightAnchor.constraint(equalToConstant: 44),
             
             searchTapButton.centerYAnchor.constraint(equalTo: searchBar.centerYAnchor),
-            searchTapButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            searchTapButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             searchTapButton.widthAnchor.constraint(equalToConstant: 32),
             searchTapButton.heightAnchor.constraint(equalToConstant: 32),
+            searchBar.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
         ])
-        
-        searchTapButton.addTarget(self, action: #selector(searchTapped), for: .touchUpInside)
+    }
+    
+    // MARK: - Events
+    private func setupSearchEvents() {
+        searchBar.onTextChanged = { [weak self] text in
+            guard let self else { return }
+            if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                self.onSearch?("") // boş olanda random şəkillər
+            }
+        }
     }
     
     @objc private func searchTapped() {
         onSearch?(searchBar.text)
+        endEditing(true)
     }
 }
 
