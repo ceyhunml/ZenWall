@@ -32,7 +32,7 @@ final class HomeViewController: UIViewController {
         setupGradientBackground()
         setupCollectionView()
         bindViewModel()
-        viewModel.fetchWallpapers()
+        viewModel.fetchRandomPhotos()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,11 +73,11 @@ final class HomeViewController: UIViewController {
     
     // MARK: - Binding
     private func bindViewModel() {
-        viewModel.onDataUpdate = { [weak self] in
+        viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
         }
         
-        viewModel.onError = { errorMsg in
+        viewModel.error = { errorMsg in
             print("Error: \(errorMsg)")
         }
     }
@@ -90,7 +90,7 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case 0, 1: return 1
-        default: return viewModel.wallpapers.count
+        default: return viewModel.photos.count
         }
     }
     
@@ -105,7 +105,9 @@ extension HomeViewController: UICollectionViewDataSource {
             return cell
         default:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperCell", for: indexPath) as! WallpaperCell
-            cell.configure(imageURL: viewModel.wallpapers[indexPath.item])
+            if let url = viewModel.photos[indexPath.row].urls?.regular {
+                cell.configure(imageURL: url)
+            }
             return cell
         }
     }

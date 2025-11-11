@@ -77,7 +77,7 @@ final class CategoryCell: UICollectionViewCell {
         titleLabel.textColor = .white
         titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         titleLabel.numberOfLines = 1
-        titleLabel.layer.shadowColor = UIColor.black.cgColor // ✅ yazı kölgəsi
+        titleLabel.layer.shadowColor = UIColor.black.cgColor
         titleLabel.layer.shadowOpacity = 0.6
         titleLabel.layer.shadowRadius = 2
         titleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
