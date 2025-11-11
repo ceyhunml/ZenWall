@@ -9,7 +9,7 @@ import Foundation
 
 final class RandomPhotosManager: RandomPhotosUseCase {
     
-    private let manager = NetworkManager()
+    private let manager = NetworkManager.shared
     
     func getRandomPhotos(count: Int, completion: @escaping ([UnsplashPhoto]?, String?) -> Void) {
         manager.request(

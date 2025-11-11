@@ -9,7 +9,7 @@ import Foundation
 
 final class TopicsManager: TopicsUseCase {
     
-    private let manager = NetworkManager()
+    private let manager = NetworkManager.shared
     
     func getTopics(completion: @escaping ([UnsplashTopic]?, String?) -> Void) {
         manager.request(

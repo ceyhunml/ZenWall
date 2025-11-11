@@ -13,7 +13,7 @@ final class NetworkingHelper {
     static let shared = NetworkingHelper()
     private init() {}
     
-    private let baseURL = "https://api.unsplash.com"
+    private let baseURL = "https://api.unsplash.com/"
     
     private let accessKey = "Z09rq8KTi5ae-4L0D3sAJ8ygjImt6kxFsd1iVtLBhdI"
     

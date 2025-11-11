@@ -9,7 +9,7 @@ import Foundation
 
 final class SearchPhotosManager: SearchPhotosUseCase {
     
-    private let manager = NetworkManager()
+    private let manager = NetworkManager.shared
     
     func searchPhotos(query: String, page: Int, completion: @escaping (SearchResponse?, String?) -> Void) {
         manager.request(
