@@ -12,6 +12,7 @@ final class HomeViewModel {
     // MARK: - Properties
     var photos = [UnsplashPhoto]()
     var currentQuery: String?
+    var currentPage = 1
     
     private let randomPhotosManager = RandomPhotosManager()
     private let searchManager = SearchPhotosManager()
@@ -45,15 +46,13 @@ final class HomeViewModel {
     }
     
     func pagination(index: Int) {
-        guard let currentQuery else { return }
-        if index == photos.count - 2 {
-            if currentQuery.isEmpty {
-                fetchRandomPhotos()
-            } else {
-                var page = 2
-                searchPhotos(query: currentQuery, page: page)
-                page += 1
-            }
+        guard index == photos.count - 2 else { return }
+        
+        if let query = currentQuery, !query.isEmpty {
+            let nextPage = currentPage + 1
+            searchPhotos(query: query, page: nextPage)
+        } else {
+            fetchRandomPhotos()
         }
     }
 }

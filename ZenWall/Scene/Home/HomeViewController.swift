@@ -80,6 +80,7 @@ final class HomeViewController: UIViewController {
     
     @objc private func refreshData() {
         viewModel.currentQuery = nil
+        viewModel.currentPage = 1
         viewModel.photos.removeAll()
         collectionView.reloadData()
         viewModel.fetchRandomPhotos()
