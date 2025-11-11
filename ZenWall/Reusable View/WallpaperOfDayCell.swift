@@ -41,7 +41,6 @@ final class WallpaperOfDayCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        // Gradient
         gradient.colors = [
             UIColor.clear.cgColor,
             UIColor.black.withAlphaComponent(0.4).cgColor
@@ -51,7 +50,6 @@ final class WallpaperOfDayCell: UICollectionViewCell {
         gradient.endPoint = CGPoint(x: 0.5, y: 1.0)
         imageView.layer.insertSublayer(gradient, at: 0)
         
-        // Overlay (tap effekti)
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.35)
         overlayView.alpha = 0
         overlayView.layer.cornerRadius = 16
@@ -65,7 +63,6 @@ final class WallpaperOfDayCell: UICollectionViewCell {
         ])
         overlayView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6) // ✅ mərkəzdən gəlmə
         
-        // Title
         titleLabel.text = "Wallpaper of the Day"
         titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         titleLabel.textColor = .white

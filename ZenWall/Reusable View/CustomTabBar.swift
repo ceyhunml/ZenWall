@@ -19,12 +19,10 @@ final class CustomTabBar: UITabBarController {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         
-        // 🎨 Arxa plan rəngi (sənin screenshotdakı kimi tünd yaşıl)
         appearance.backgroundColor = UIColor(red: 0.10, green: 0.20, blue: 0.15, alpha: 1.0)
         
-        // 🔸 Seçilmiş və seçilməmiş icon/text rəngləri
         let selectedColor = UIColor.white
-        let unselectedColor = UIColor(red: 0.58, green: 0.74, blue: 0.65, alpha: 1.0) // Sönük mint tonu
+        let unselectedColor = UIColor(red: 0.58, green: 0.74, blue: 0.65, alpha: 1.0)
         
         appearance.stackedLayoutAppearance.selected.iconColor = selectedColor
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
@@ -38,7 +36,6 @@ final class CustomTabBar: UITabBarController {
             .font: UIFont.systemFont(ofSize: 12, weight: .medium)
         ]
         
-        // 🔹 Kənar xətləri gizlət
         appearance.shadowColor = .clear
         
         tabBar.standardAppearance = appearance
@@ -50,7 +47,6 @@ final class CustomTabBar: UITabBarController {
     }
     
     private func setupViewControllers() {
-        // 🔸 Home
         let homeVC = UINavigationController(rootViewController: HomeViewController())
         homeVC.tabBarItem = UITabBarItem(
             title: "Home",
@@ -58,7 +54,6 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "house.fill")
         )
         
-        // 🔸 Categories
         let categoriesVC = UINavigationController(rootViewController: CategoriesViewController())
         categoriesVC.tabBarItem = UITabBarItem(
             title: "Categories",
@@ -66,7 +61,6 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "circle.grid.2x2.fill")
         )
         
-        // 🔸 Favorites
         let favoritesVC = UIViewController()
         favoritesVC.view.backgroundColor = .systemBackground
         favoritesVC.tabBarItem = UITabBarItem(title: "Favorites",

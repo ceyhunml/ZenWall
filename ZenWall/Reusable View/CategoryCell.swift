@@ -41,7 +41,6 @@ final class CategoryCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        // ✅ GradientView (şəkildən ayrı overlay)
         gradientView.clipsToBounds = true
         gradientView.layer.cornerRadius = 16
         contentView.addSubview(gradientView)
@@ -53,7 +52,6 @@ final class CategoryCell: UICollectionViewCell {
             gradientView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        // ✅ Gradient layer — daha dərin və aşağıdan gələn effekt
         gradientLayer.colors = [
             UIColor.clear.cgColor,
             UIColor.black.withAlphaComponent(0.65).cgColor
@@ -63,7 +61,6 @@ final class CategoryCell: UICollectionViewCell {
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         gradientView.layer.addSublayer(gradientLayer)
         
-        // Overlay (tap effekti)
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.35)
         overlayView.alpha = 0
         overlayView.layer.cornerRadius = 16
@@ -77,7 +74,6 @@ final class CategoryCell: UICollectionViewCell {
         ])
         overlayView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
         
-        // Label
         titleLabel.textColor = .white
         titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         titleLabel.numberOfLines = 1
@@ -135,7 +131,6 @@ final class CategoryCell: UICollectionViewCell {
         titleLabel.text = model.name
         imageView.image = nil
         
-        // Gradient dərhal görünür, şəkil gəlməsə belə
         if let url = URL(string: model.imageURL) {
             imageView.kf.setImage(
                 with: url,
