@@ -15,10 +15,10 @@ final class CustomTabBar: UITabBarController {
         setupViewControllers()
     }
     
+    // MARK: - Appearance
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        
         appearance.backgroundColor = UIColor(red: 0.10, green: 0.20, blue: 0.15, alpha: 1.0)
         
         let selectedColor = UIColor.white
@@ -37,25 +37,26 @@ final class CustomTabBar: UITabBarController {
         ]
         
         appearance.shadowColor = .clear
-        
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
-        
         tabBar.isTranslucent = false
         tabBar.tintColor = selectedColor
         tabBar.unselectedItemTintColor = unselectedColor
     }
     
+    // MARK: - View Controllers
     private func setupViewControllers() {
-        let homeVC = UINavigationController(rootViewController: HomeViewController())
-        homeVC.tabBarItem = UITabBarItem(
+        let homeNav = UINavigationController()
+        let homeCoordinator = HomeCoordinator(navigationController: homeNav)
+        homeCoordinator.start()
+        homeNav.tabBarItem = UITabBarItem(
             title: "Home",
             image: UIImage(systemName: "house"),
             selectedImage: UIImage(systemName: "house.fill")
         )
         
-        let categoriesVC = UINavigationController(rootViewController: CategoriesViewController())
-        categoriesVC.tabBarItem = UITabBarItem(
+        let categoriesNav = UINavigationController(rootViewController: CategoriesViewController())
+        categoriesNav.tabBarItem = UITabBarItem(
             title: "Categories",
             image: UIImage(systemName: "circle.grid.2x2"),
             selectedImage: UIImage(systemName: "circle.grid.2x2.fill")
@@ -63,16 +64,20 @@ final class CustomTabBar: UITabBarController {
         
         let favoritesVC = UIViewController()
         favoritesVC.view.backgroundColor = .systemBackground
-        favoritesVC.tabBarItem = UITabBarItem(title: "Favorites",
-                                              image: UIImage(systemName: "heart"),
-                                              selectedImage: UIImage(systemName: "heart.fill"))
+        favoritesVC.tabBarItem = UITabBarItem(
+            title: "Favorites",
+            image: UIImage(systemName: "heart"),
+            selectedImage: UIImage(systemName: "heart.fill")
+        )
         
         let profileVC = UIViewController()
         profileVC.view.backgroundColor = .systemBackground
-        profileVC.tabBarItem = UITabBarItem(title: "Profile",
-                                            image: UIImage(systemName: "person"),
-                                            selectedImage: UIImage(systemName: "person.fill"))
+        profileVC.tabBarItem = UITabBarItem(
+            title: "Profile",
+            image: UIImage(systemName: "person"),
+            selectedImage: UIImage(systemName: "person.fill")
+        )
         
-        setViewControllers([homeVC, categoriesVC, favoritesVC, profileVC], animated: false)
+        setViewControllers([homeNav, categoriesNav, favoritesVC, profileVC], animated: false)
     }
 }

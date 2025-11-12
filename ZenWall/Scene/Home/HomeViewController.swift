@@ -9,8 +9,18 @@ import UIKit
 
 final class HomeViewController: UIViewController {
     
-    // MARK: - ViewModel
-    private let viewModel = HomeViewModel()
+    private let viewModel: HomeViewModel
+    private let coordinator: HomeCoordinator
+    
+    init(viewModel: HomeViewModel, coordinator: HomeCoordinator) {
+        self.viewModel = viewModel
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
@@ -163,6 +173,15 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         return header
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 1 {
+            
+        }
+        if indexPath.section == 2 {
+            coordinator.showWallpaperDetail(for: viewModel.photos[indexPath.row])
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         viewModel.pagination(index: indexPath.row)
     }
@@ -177,7 +196,7 @@ extension HomeViewController {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
             switch sectionIndex {
                 
-            // MARK: - Section 0 → Header (ZenWall + Search)
+                // MARK: - Section 0 → Header (ZenWall + Search)
             case 0:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
@@ -197,7 +216,7 @@ extension HomeViewController {
                 section.contentInsets = .init(top: 8, leading: 16, bottom: 8, trailing: 16)
                 return section
                 
-            // MARK: - Section 1 → Wallpaper of the Day
+                // MARK: - Section 1 → Wallpaper of the Day
             case 1:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
@@ -217,7 +236,7 @@ extension HomeViewController {
                 section.contentInsets = .init(top: 0, leading: 16, bottom: 16, trailing: 16)
                 return section
                 
-            // MARK: - Section 2 → Wallpapers Grid (2 sütunlu)
+                // MARK: - Section 2 → Wallpapers Grid (2 sütunlu)
             default:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(0.5),

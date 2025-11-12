@@ -14,6 +14,15 @@ final class HomeViewModel {
     var photoOfDay: UnsplashPhoto?
     var currentQuery: String?
     var currentPage = 1
+    var onPhotoSelected: ((UnsplashPhoto) -> Void)?
+    
+    init(onPhotoSelected: ((UnsplashPhoto) -> Void)? = nil) {
+        self.onPhotoSelected = onPhotoSelected
+    }
+    
+    required init(onPhotoSelected: @escaping ((String) -> Void)) {
+        onPhotoSelected(String())
+    }
     
     var success: (() -> Void)?
     var error: ((String) -> Void)?
@@ -25,14 +34,15 @@ final class HomeViewModel {
     func fetchRandomPhotos() {
         
         randomManager.getRandomPhotos(count: 20) { [weak self] data, error in
+            guard let self else { return }
             if let data {
-                self?.photos.append(contentsOf: data)
-                if ((self?.photoOfDay) == nil) {
-                    self?.photoOfDay = data.randomElement()
+                self.photos.append(contentsOf: data)
+                if ((self.photoOfDay) == nil) {
+                    self.photoOfDay = data.randomElement()
                 }
-                self?.success?()
+                self.success?()
             } else if let error {
-                self?.error?(error)
+                self.error?(error)
             }
         }
     }
@@ -68,6 +78,12 @@ final class HomeViewModel {
         } else {
             fetchRandomPhotos()
         }
+    }
+    
+    func didSelectPhoto(at index: Int) {
+        guard index < photos.count else { return }
+        let selectedPhoto = photos[index]
+        onPhotoSelected?(selectedPhoto)
     }
     
     // MARK: - Refresh

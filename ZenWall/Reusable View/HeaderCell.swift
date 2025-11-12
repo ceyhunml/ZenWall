@@ -81,7 +81,7 @@ final class HeaderCell: UICollectionViewCell {
         searchBar.onTextChanged = { [weak self] text in
             guard let self else { return }
             if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                self.onSearch?("") // boş olanda random şəkillər
+                self.onSearch?("")
             }
         }
     }

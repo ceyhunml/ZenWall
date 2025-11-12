@@ -12,10 +12,8 @@ import Kingfisher
 final class CategoryCell: UICollectionViewCell {
     
     private let imageView = UIImageView()
-    private let gradientView = UIView()
     private let overlayView = UIView()
     private let titleLabel = UILabel()
-    private let gradientLayer = CAGradientLayer()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,7 +26,6 @@ final class CategoryCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        // ImageView
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 16
@@ -40,26 +37,6 @@ final class CategoryCell: UICollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-        
-        gradientView.clipsToBounds = true
-        gradientView.layer.cornerRadius = 16
-        contentView.addSubview(gradientView)
-        gradientView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            gradientView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            gradientView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            gradientView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            gradientView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-        
-        gradientLayer.colors = [
-            UIColor.clear.cgColor,
-            UIColor.black.withAlphaComponent(0.65).cgColor
-        ]
-        gradientLayer.locations = [0.3, 1.0]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
-        gradientView.layer.addSublayer(gradientLayer)
         
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.35)
         overlayView.alpha = 0
@@ -119,7 +96,6 @@ final class CategoryCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        gradientLayer.frame = gradientView.bounds
     }
     
     override func prepareForReuse() {
