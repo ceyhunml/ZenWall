@@ -79,11 +79,7 @@ final class HomeViewController: UIViewController {
     }
     
     @objc private func refreshData() {
-        viewModel.currentQuery = nil
-        viewModel.currentPage = 1
-        viewModel.photos.removeAll()
-        collectionView.reloadData()
-        viewModel.fetchRandomPhotos()
+        viewModel.refresh()
     }
     
     // MARK: - Binding
@@ -129,7 +125,10 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperOfDayCell", for: indexPath) as! WallpaperOfDayCell
-            cell.configure(imageURL: "https://images.unsplash.com/photo-1507149833265-60c372daea22")
+            if indexPath.row < viewModel.photos.count {
+                let url = viewModel.photoOfDay?.urls?.regular ?? ""
+                cell.configure(imageURL: url)
+            }
             return cell
             
         default:
