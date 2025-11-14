@@ -7,9 +7,7 @@
 
 import UIKit
 
-import UIKit
-
-final class WallpaperDetailsViewController: UIViewController {
+final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Properties
     private let viewModel: WallpaperDetailsViewModel
@@ -26,18 +24,52 @@ final class WallpaperDetailsViewController: UIViewController {
     }
     
     // MARK: - UI Elements
-    private let wallpaperImageView: UIImageView = {
+    private lazy var backgroundImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.layer.cornerRadius = 20
-        iv.isUserInteractionEnabled = true
+        iv.isOpaque = true
+        iv.backgroundColor = .clear
         return iv
     }()
     
-    private let containerView = UIView()
+    private lazy var blurView: UIVisualEffectView = {
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blur.alpha = 0.9
+        return blur
+    }()
     
-    private let titleLabel: UILabel = {
+    private lazy var scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.delegate = self
+        sv.minimumZoomScale = 1.0
+        sv.maximumZoomScale = 3.0
+        sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
+        sv.layer.masksToBounds = false
+        sv.isOpaque = true
+        sv.backgroundColor = .clear
+        return sv
+    }()
+    
+    private lazy var wallpaperImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        iv.isUserInteractionEnabled = true
+        iv.isOpaque = true
+        iv.backgroundColor = .clear
+        iv.layer.allowsEdgeAntialiasing = true
+        iv.layer.contentsScale = UIScreen.main.scale
+        return iv
+    }()
+    
+    private lazy var containerView: UIView = {
+        let v = UIView()
+        return v
+    }()
+    
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Download Wallpaper"
         label.textColor = .white
@@ -45,7 +77,7 @@ final class WallpaperDetailsViewController: UIViewController {
         return label
     }()
     
-    private let subtitleLabel: UILabel = {
+    private lazy var subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Choose your preferred option."
         label.textColor = UIColor(white: 1, alpha: 0.7)
@@ -53,52 +85,87 @@ final class WallpaperDetailsViewController: UIViewController {
         return label
     }()
     
-    private let fullButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Download Full Size", for: .normal)
-        button.backgroundColor = UIColor(white: 1, alpha: 0.2)
-        button.layer.cornerRadius = 12
-        button.tintColor = .white
-        return button
+    private lazy var fullButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Download Full Size", for: .normal)
+        btn.backgroundColor = UIColor(white: 1, alpha: 0.2)
+        btn.layer.cornerRadius = 12
+        btn.tintColor = .white
+        return btn
     }()
     
-    private let fitButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Download Fit to Screen", for: .normal)
-        button.backgroundColor = UIColor(white: 1, alpha: 0.1)
-        button.layer.cornerRadius = 12
-        button.tintColor = UIColor(white: 1, alpha: 0.7)
-        return button
+    private lazy var fitButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Download Fit to Screen", for: .normal)
+        btn.backgroundColor = UIColor(white: 1, alpha: 0.1)
+        btn.layer.cornerRadius = 12
+        btn.tintColor = UIColor(white: 1, alpha: 0.7)
+        return btn
     }()
+    
+    // Constraints
+    private var scrollTopConstraint: NSLayoutConstraint!
+    private var scrollLeadingConstraint: NSLayoutConstraint!
+    private var scrollTrailingConstraint: NSLayoutConstraint!
+    private var scrollHeightConstraint: NSLayoutConstraint!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupBindings()
-        setupTapGesture()
-        viewModel.fetchImage()
+        setupGestures()
+        viewModel.loadImage()
     }
     
     // MARK: - Setup
     private func setupUI() {
-        view.backgroundColor = UIColor(red: 0.1, green: 0.18, blue: 0.15, alpha: 1)
+        view.backgroundColor = .black
         
-        view.addSubview(wallpaperImageView)
-        view.addSubview(containerView)
-        [titleLabel, subtitleLabel, fullButton, fitButton].forEach { containerView.addSubview($0) }
-        
-        wallpaperImageView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        [titleLabel, subtitleLabel, fullButton, fitButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
+        [backgroundImageView, blurView, scrollView, containerView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
         
         NSLayoutConstraint.activate([
-            wallpaperImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            wallpaperImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            wallpaperImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            wallpaperImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6),
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            containerView.topAnchor.constraint(equalTo: wallpaperImageView.bottomAnchor, constant: 24),
+            blurView.topAnchor.constraint(equalTo: view.topAnchor),
+            blurView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        scrollView.addSubview(wallpaperImageView)
+        [titleLabel, subtitleLabel, fullButton, fitButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview($0)
+        }
+        
+        wallpaperImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollTopConstraint = scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8)
+        scrollLeadingConstraint = scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+        scrollTrailingConstraint = scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        scrollHeightConstraint = scrollView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6)
+        
+        NSLayoutConstraint.activate([
+            scrollTopConstraint,
+            scrollLeadingConstraint,
+            scrollTrailingConstraint,
+            scrollHeightConstraint,
+            
+            wallpaperImageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            wallpaperImageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            wallpaperImageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            wallpaperImageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            wallpaperImageView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            wallpaperImageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+            
+            containerView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 24),
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -122,23 +189,56 @@ final class WallpaperDetailsViewController: UIViewController {
     }
     
     private func setupBindings() {
-        viewModel.onImageLoaded = { [weak self] image in
-            self?.wallpaperImageView.image = image
+        viewModel.onImageURL = { [weak self] url in
+            guard let self, let url else { return }
+            self.wallpaperImageView.setUnsplashImage(url)
+            self.backgroundImageView.setUnsplashImage(url)
         }
     }
     
-    private func setupTapGesture() {
+    private func setupGestures() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(toggleFullScreen))
         wallpaperImageView.addGestureRecognizer(tap)
     }
     
+    // MARK: - Fullscreen toggle
     @objc private func toggleFullScreen() {
         isFullScreen.toggle()
+        view.layoutIfNeeded()
         
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.35,
+                       delay: 0,
+                       usingSpringWithDamping: 0.9,
+                       initialSpringVelocity: 0.8,
+                       options: [.curveEaseInOut],
+                       animations: {
             self.containerView.alpha = self.isFullScreen ? 0 : 1
-            self.wallpaperImageView.layer.cornerRadius = self.isFullScreen ? 0 : 20
-            self.wallpaperImageView.contentMode = self.isFullScreen ? .scaleAspectFit : .scaleAspectFill
+            
+            if self.isFullScreen {
+                self.scrollTopConstraint.constant = 0
+                self.scrollLeadingConstraint.constant = 0
+                self.scrollTrailingConstraint.constant = 0
+                self.scrollHeightConstraint.isActive = false
+                self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+                self.wallpaperImageView.layer.cornerRadius = 0
+                self.view.backgroundColor = .black
+                self.scrollView.maximumZoomScale = 3.0
+            } else {
+                self.scrollTopConstraint.constant = 8
+                self.scrollLeadingConstraint.constant = 16
+                self.scrollTrailingConstraint.constant = -16
+                self.scrollHeightConstraint.isActive = true
+                self.scrollView.setZoomScale(1.0, animated: false)
+                self.scrollView.maximumZoomScale = 1.0
+                self.view.backgroundColor = UIColor(red: 0.1, green: 0.18, blue: 0.15, alpha: 1)
+            }
+            
+            self.view.layoutIfNeeded()
         })
+    }
+    
+    // MARK: - Zoom Delegate
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return isFullScreen ? wallpaperImageView : nil
     }
 }

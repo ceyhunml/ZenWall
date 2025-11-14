@@ -175,7 +175,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 1 {
-            
+            guard let photoOfDay = viewModel.photoOfDay else { return }
+            coordinator.showWallpaperDetail(for: photoOfDay)
         }
         if indexPath.section == 2 {
             coordinator.showWallpaperDetail(for: viewModel.photos[indexPath.row])

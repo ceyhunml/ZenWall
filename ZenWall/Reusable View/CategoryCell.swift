@@ -12,13 +12,11 @@ import Kingfisher
 final class CategoryCell: UICollectionViewCell {
     
     private let imageView = UIImageView()
-    private let overlayView = UIView()
     private let titleLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        setupGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -38,19 +36,6 @@ final class CategoryCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.35)
-        overlayView.alpha = 0
-        overlayView.layer.cornerRadius = 16
-        contentView.addSubview(overlayView)
-        overlayView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            overlayView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            overlayView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-        overlayView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
-        
         titleLabel.textColor = .white
         titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         titleLabel.numberOfLines = 1
@@ -66,41 +51,12 @@ final class CategoryCell: UICollectionViewCell {
         ])
     }
     
-    private func setupGesture() {
-        let tap = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        tap.minimumPressDuration = 0.05
-        contentView.addGestureRecognizer(tap)
-    }
-    
-    @objc private func handleTap(_ gesture: UILongPressGestureRecognizer) {
-        switch gesture.state {
-        case .began:
-            animateOverlay(show: true)
-        case .ended, .cancelled, .failed:
-            animateOverlay(show: false)
-        default:
-            break
-        }
-    }
-    
-    private func animateOverlay(show: Bool) {
-        UIView.animate(withDuration: 0.15,
-                       delay: 0,
-                       usingSpringWithDamping: 0.8,
-                       initialSpringVelocity: 0.4,
-                       options: [.curveEaseOut]) {
-            self.overlayView.alpha = show ? 1 : 0
-            self.overlayView.transform = show ? .identity : CGAffineTransform(scaleX: 0.6, y: 0.6)
-        }
-    }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        overlayView.alpha = 0
     }
     
     func configure(with model: CategoryModel) {
@@ -111,7 +67,7 @@ final class CategoryCell: UICollectionViewCell {
             imageView.kf.setImage(
                 with: url,
                 placeholder: nil,
-                options: [.transition(.none), .cacheOriginalImage]
+                options: [.transition(.fade(0.3)), .cacheOriginalImage]
             )
         }
     }

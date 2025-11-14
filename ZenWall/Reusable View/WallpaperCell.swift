@@ -77,9 +77,7 @@ final class WallpaperCell: UICollectionViewCell {
     
     // MARK: - Configure
     func configure(imageURL: String) {
-        if let url = URL(string: imageURL) {
-            imageView.kf.setImage(with: url, options: [.transition(.fade(0.3)), .cacheOriginalImage])
-        }
+        imageView.setUnsplashImage(imageURL)
     }
     
     // MARK: - Actions

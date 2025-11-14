@@ -13,14 +13,11 @@ final class WallpaperOfDayCell: UICollectionViewCell {
     var onTap: (() -> Void)?
     
     private let imageView = UIImageView()
-    private let gradient = CAGradientLayer()
-    private let overlayView = UIView()
     private let titleLabel = UILabel()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        setupGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -41,31 +38,13 @@ final class WallpaperOfDayCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
         
-        gradient.colors = [
-            UIColor.clear.cgColor,
-            UIColor.black.withAlphaComponent(0.4).cgColor
-        ]
-        gradient.locations = [0.7, 1.0]
-        gradient.startPoint = CGPoint(x: 0.5, y: 0.0)
-        gradient.endPoint = CGPoint(x: 0.5, y: 1.0)
-        imageView.layer.insertSublayer(gradient, at: 0)
-        
-        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.35)
-        overlayView.alpha = 0
-        overlayView.layer.cornerRadius = 16
-        imageView.addSubview(overlayView)
-        overlayView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            overlayView.topAnchor.constraint(equalTo: imageView.topAnchor),
-            overlayView.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            overlayView.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
-            overlayView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor)
-        ])
-        overlayView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6) // ✅ mərkəzdən gəlmə
-        
         titleLabel.text = "Wallpaper of the Day"
         titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         titleLabel.textColor = .white
+        titleLabel.layer.shadowColor = UIColor.black.cgColor
+        titleLabel.layer.shadowOpacity = 0.6
+        titleLabel.layer.shadowRadius = 2
+        titleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
         imageView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -74,46 +53,13 @@ final class WallpaperOfDayCell: UICollectionViewCell {
         ])
     }
     
-    // MARK: - Gesture
-    private func setupGesture() {
-        let tap = UILongPressGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        tap.minimumPressDuration = 0.05
-        contentView.addGestureRecognizer(tap)
-    }
-    
-    @objc private func handleTap(_ gesture: UILongPressGestureRecognizer) {
-        switch gesture.state {
-        case .began:
-            animateOverlay(show: true)
-        case .ended, .cancelled, .failed:
-            animateOverlay(show: false)
-            onTap?()
-        default:
-            break
-        }
-    }
-    
-    private func animateOverlay(show: Bool) {
-        UIView.animate(withDuration: 0.15,
-                       delay: 0,
-                       usingSpringWithDamping: 0.8,
-                       initialSpringVelocity: 0.4,
-                       options: [.curveEaseOut]) {
-            self.overlayView.alpha = show ? 1 : 0
-            self.overlayView.transform = show ? .identity : CGAffineTransform(scaleX: 0.6, y: 0.6)
-        }
-    }
-    
     // MARK: - Layout
     override func layoutSubviews() {
         super.layoutSubviews()
-        gradient.frame = imageView.bounds
     }
     
     // MARK: - Configure
     func configure(imageURL: String) {
-        if let url = URL(string: imageURL) {
-            imageView.kf.setImage(with: url, options: [.transition(.fade(0.3)), .cacheOriginalImage])
-        }
+        imageView.setUnsplashImage(imageURL)
     }
 }

@@ -10,9 +10,23 @@ import UIKit
 import Kingfisher
 
 extension UIImageView {
-    
-//    func getImage(path: String) {
-//        let url = URL(string: NetworkingHelper.shared.configureImageURL(path: path)
-//        kf.setImage(with: url)
-//    }
+    func setUnsplashImage(_ urlString: String?,
+                          placeholder: UIImage? = nil) {
+        
+        guard let urlString,
+              let url = URL(string: urlString) else {
+            self.image = placeholder
+            return
+        }
+        
+        self.kf.setImage(
+            with: url,
+            placeholder: placeholder,
+            options: [
+                .transition(.fade(0.25)),
+                .cacheOriginalImage,
+                .backgroundDecode
+            ]
+        )
+    }
 }
