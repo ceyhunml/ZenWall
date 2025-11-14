@@ -80,12 +80,6 @@ final class HomeViewModel {
         }
     }
     
-    func didSelectPhoto(at index: Int) {
-        guard index < photos.count else { return }
-        let selectedPhoto = photos[index]
-        onPhotoSelected?(selectedPhoto)
-    }
-    
     // MARK: - Refresh
     func refresh() {
         currentQuery = nil
