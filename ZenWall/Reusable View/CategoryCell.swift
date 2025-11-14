@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import Kingfisher
 
 final class CategoryCell: UICollectionViewCell {
     
