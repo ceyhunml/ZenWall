@@ -37,7 +37,7 @@ final class CategoryCell: UICollectionViewCell {
         ])
         
         titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         titleLabel.numberOfLines = 1
         titleLabel.layer.shadowColor = UIColor.black.cgColor
         titleLabel.layer.shadowOpacity = 0.6
@@ -59,16 +59,8 @@ final class CategoryCell: UICollectionViewCell {
         super.prepareForReuse()
     }
     
-    func configure(with model: CategoryModel) {
-        titleLabel.text = model.name
-        imageView.image = nil
-        
-        if let url = URL(string: model.imageURL) {
-            imageView.kf.setImage(
-                with: url,
-                placeholder: nil,
-                options: [.transition(.fade(0.3)), .cacheOriginalImage]
-            )
-        }
+    func configure(title: String, cover: String) {
+        titleLabel.text = title
+        imageView.setUnsplashImage(cover)
     }
 }

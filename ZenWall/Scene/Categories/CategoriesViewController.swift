@@ -110,7 +110,7 @@ extension CategoriesViewController: UICollectionViewDataSource, UICollectionView
             return UICollectionViewCell()
         }
         let model = viewModel.categories[indexPath.item]
-        cell.configure(with: model)
+        cell.configure(title: model.title ?? "",cover: model.coverPhoto?.urls?.regular ?? "")
         return cell
     }
 }
