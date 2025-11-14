@@ -18,4 +18,14 @@ final class TopicsManager: TopicsUseCase {
             completion: completion
         )
     }
+    
+    func getTopicPhotos(topicSlug: String, page: Int = 1, completion: @escaping ([UnsplashPhoto]?, String?) -> Void) {
+        let url = UnsplashEndpoint.topicPhotos(slug: topicSlug, page: page).path
+        
+        manager.request(
+            url: url,
+            model: [UnsplashPhoto].self,
+            completion: completion
+        )
+    }
 }
