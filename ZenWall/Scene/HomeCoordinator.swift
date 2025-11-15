@@ -30,7 +30,7 @@ final class HomeCoordinator: Coordinator {
         navigationController.pushViewController(homeVC, animated: false)
     }
     
-     func showWallpaperDetail(for photo: UnsplashPhoto) {
+    func showWallpaperDetail(for photo: UnsplashPhoto) {
         let detailVM = WallpaperDetailsViewModel(photo: photo)
         let detailVC = WallpaperDetailsViewController(viewModel: detailVM)
         navigationController.pushViewController(detailVC, animated: true)

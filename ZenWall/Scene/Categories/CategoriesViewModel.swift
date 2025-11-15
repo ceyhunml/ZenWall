@@ -9,6 +9,12 @@ import Foundation
 
 final class CategoriesViewModel {
     
+    weak var coordinator: CategoriesCoordinator?
+    
+    init(coordinator: CategoriesCoordinator?) {
+        self.coordinator = coordinator
+    }
+    
     private(set) var categories = [UnsplashTopic]()
     private let manager = TopicsManager()
     

@@ -10,9 +10,9 @@ import UIKit
 class ListViewController: UIViewController {
     
     private let viewModel: ListViewModel
-    private let coordinator: HomeCoordinator
+    private let coordinator: CategoriesCoordinator
     
-    init(viewModel: ListViewModel, coordinator: HomeCoordinator) {
+    init(viewModel: ListViewModel, coordinator: CategoriesCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -42,9 +42,16 @@ class ListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        applyColoredNavBar()
+        disableLargeTitle()
         setupGradientBackground()
         setupCollectionView()
         bindViewModel()
+        viewModel.fetchImages()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     private func setupGradientBackground() {
@@ -109,6 +116,10 @@ extension ListViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         coordinator.showWallpaperDetail(for: viewModel.photos[indexPath.row])
     }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        viewModel.pagination(index: indexPath.row)
+    }
 }
 
 extension ListViewController {
@@ -135,4 +146,3 @@ extension ListViewController {
         }
     }
 }
-

@@ -11,6 +11,7 @@ final class ListViewModel {
     
     // MARK: - Properties
     var photos: [UnsplashPhoto] = []
+    var selectedTopic = ""
     var currentPage = 1
     var onPhotoSelected: ((UnsplashPhoto) -> Void)?
     
@@ -25,63 +26,30 @@ final class ListViewModel {
     var success: (() -> Void)?
     var error: ((String) -> Void)?
     
-    private let randomManager = RandomPhotosManager()
+    private let manager = TopicsManager()
     
-    // MARK: - Random Photos
-    func fetchRandomPhotos() {
-        
-        randomManager.getRandomPhotos(count: 20) { [weak self] data, error in
-            guard let self else { return }
-            if let data {
+    func fetchImages(page: Int = 1) {
+        manager.getTopicPhotos(topicSlug: selectedTopic, page: page) { data, error in
+            if let error {
+                self.error?(error)
+            } else if let data {
                 self.photos.append(contentsOf: data)
-                if ((self.photoOfDay) == nil) {
-                    self.photoOfDay = data.randomElement()
-                }
                 self.success?()
-            } else if let error {
-                self.error?(error)
             }
         }
     }
     
-     //MARK: - Search Photos
-    func searchPhotos(query: String, page: Int = 1) {
-        currentQuery = query
-        
-        searchManager.searchPhotos(query: query, page: page) { [weak self] data, error in
-            guard let self else { return }
-            
-            if let data {
-                if page == 1 {
-                    self.photos = data.results ?? []
-                } else {
-                    self.photos.append(contentsOf: data.results ?? [])
-                }
-                self.currentPage = page
-                self.success?()
-            } else if let error {
-                self.error?(error)
-            }
-        }
-    }
-    
-    // MARK: - Pagination
+    //MARK: - Pagination
     func pagination(index: Int) {
         guard index == photos.count - 2 else { return }
-        
-        if let query = currentQuery, !query.isEmpty {
-            currentPage += 1
-            searchPhotos(query: query, page: currentPage)
-        } else {
-            fetchRandomPhotos()
-        }
+        currentPage += 1
+        fetchImages(page: currentPage)
     }
     
-    // MARK: - Refresh
+    //MARK: - Refresh
     func refresh() {
-        currentQuery = nil
         currentPage = 1
         photos.removeAll()
-        fetchRandomPhotos()
+        fetchImages()
     }
 }

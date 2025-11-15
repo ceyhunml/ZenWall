@@ -46,6 +46,7 @@ final class CustomTabBar: UITabBarController {
     
     // MARK: - View Controllers
     private func setupViewControllers() {
+        
         let homeNav = UINavigationController()
         let homeCoordinator = HomeCoordinator(navigationController: homeNav)
         homeCoordinator.start()
@@ -55,7 +56,15 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "house.fill")
         )
         
-        let categoriesNav = UINavigationController(rootViewController: CategoriesViewController())
+        let categoriesNav = UINavigationController()
+        let categoriesCoordinator = CategoriesCoordinator(navigationController: categoriesNav)
+        
+        let categoriesVC = CategoriesViewController(
+            viewModel: CategoriesViewModel(),
+            coordinator: categoriesCoordinator
+        )
+        categoriesNav.viewControllers = [categoriesVC]
+        
         categoriesNav.tabBarItem = UITabBarItem(
             title: "Categories",
             image: UIImage(systemName: "circle.grid.2x2"),

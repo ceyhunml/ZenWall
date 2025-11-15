@@ -8,16 +8,49 @@
 import UIKit
 
 final class CategoriesViewController: UIViewController {
-
+    
     private var collectionView: UICollectionView!
-    let viewModel = CategoriesViewModel()
-
+    private let viewModel: CategoriesViewModel
+    private let coordinator: CategoriesCoordinator
+    
+    // MARK: - Init
+    init(viewModel: CategoriesViewModel, coordinator: CategoriesCoordinator) {
+        self.viewModel = viewModel
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         setupNavigationBar()
         setupCollectionView()
+        bindViewModel()
+        viewModel.fetchNewCategories()
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        applyColoredNavBar()
+        enableLargeTitle()
+        title = "Categories"
+    }
+    
+    private func bindViewModel() {
+        viewModel.success = { [weak self] in
+            self?.collectionView.reloadData()
+        }
+        
+        viewModel.failure = { errorMsg in
+            print("ERROR: \(errorMsg)")
+        }
+    }
+    
     // MARK: - CollectionView + Gradient
     private func setupCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: Self.createLayout())
@@ -35,7 +68,7 @@ final class CategoriesViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-
+        
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
@@ -43,31 +76,32 @@ final class CategoriesViewController: UIViewController {
         ]
         gradientLayer.locations = [0.0, 1.0]
         gradientLayer.frame = UIScreen.main.bounds
-
+        
         let gradientView = UIView(frame: UIScreen.main.bounds)
         gradientView.layer.addSublayer(gradientLayer)
         collectionView.backgroundView = gradientView
     }
-
+    
     // MARK: - Navigation Bar Style
     private func setupNavigationBar() {
         title = "Categories"
         navigationController?.navigationBar.prefersLargeTitles = true
+        
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1)
-        
         appearance.shadowColor = .clear
         
         appearance.largeTitleTextAttributes = [
             .foregroundColor: UIColor.white,
             .font: UIFont.systemFont(ofSize: 34, weight: .bold)
         ]
+        
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.white,
             .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
         ]
-
+        
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
@@ -75,7 +109,6 @@ final class CategoriesViewController: UIViewController {
     }
 }
 
-// MARK: - Layout
 extension CategoriesViewController {
     static func createLayout() -> UICollectionViewLayout {
         UICollectionViewCompositionalLayout { _, _ in
@@ -112,5 +145,10 @@ extension CategoriesViewController: UICollectionViewDataSource, UICollectionView
         let model = viewModel.categories[indexPath.item]
         cell.configure(title: model.title ?? "",cover: model.coverPhoto?.urls?.regular ?? "")
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let slug = viewModel.categories[indexPath.item].slug ?? ""
+        coordinator.showList(for: slug)
     }
 }

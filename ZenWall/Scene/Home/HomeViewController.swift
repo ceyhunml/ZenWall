@@ -44,20 +44,16 @@ final class HomeViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        disableLargeTitle()
         setupGradientBackground()
         setupCollectionView()
         bindViewModel()
         viewModel.fetchRandomPhotos()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        applyTransparentNavBar()
     }
     
     // MARK: - Setup
@@ -197,7 +193,6 @@ extension HomeViewController {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
             switch sectionIndex {
                 
-                // MARK: - Section 0 → Header (ZenWall + Search)
             case 0:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
@@ -217,7 +212,6 @@ extension HomeViewController {
                 section.contentInsets = .init(top: 8, leading: 16, bottom: 8, trailing: 16)
                 return section
                 
-                // MARK: - Section 1 → Wallpaper of the Day
             case 1:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1.0),
@@ -237,7 +231,6 @@ extension HomeViewController {
                 section.contentInsets = .init(top: 0, leading: 16, bottom: 16, trailing: 16)
                 return section
                 
-                // MARK: - Section 2 → Wallpapers Grid (2 sütunlu)
             default:
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(0.5),

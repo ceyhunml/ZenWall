@@ -112,12 +112,14 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        applyTransparentNavBar()
+        disableLargeTitle()
         setupUI()
         setupBindings()
         setupGestures()
         viewModel.loadImage()
     }
-    
+
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .black
