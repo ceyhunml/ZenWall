@@ -71,6 +71,7 @@ class ListViewController: UIViewController {
     }
     
     private func setupCollectionView() {
+        title = viewModel.selectedTopicForUI
         view.addSubview(collectionView)
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)

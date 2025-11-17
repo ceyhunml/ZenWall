@@ -34,6 +34,14 @@ final class CategoriesViewController: UIViewController {
         viewModel.fetchNewCategories()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        setupNavigationBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        setupNavigationBar()
+    }
+    
     private func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
@@ -140,12 +148,14 @@ extension CategoriesViewController: UICollectionViewDataSource, UICollectionView
             return UICollectionViewCell()
         }
         let model = viewModel.categories[indexPath.item]
+        
         cell.configure(title: model.title ?? "",cover: model.coverPhoto?.urls?.regular ?? "")
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let slug = viewModel.categories[indexPath.item].slug ?? ""
-        coordinator.showList(for: slug)
+        let topicName = viewModel.categories[indexPath.item].title ?? ""
+        coordinator.showList(for: slug, topicName: topicName)
     }
 }

@@ -23,12 +23,13 @@ final class CategoriesCoordinator: Coordinator {
         navigationController.setViewControllers([vc], animated: false)
     }
     
-    func showList(for topicSlug: String) {
+    func showList(for topicSlug: String, topicName: String) {
         let listVM = ListViewModel(onPhotoSelected: { [weak self] photo in
             self?.showWallpaperDetail(for: photo)
         })
         
         listVM.selectedTopic = topicSlug
+        listVM.selectedTopicForUI = topicName
         
         let listVC = ListViewController(viewModel: listVM, coordinator: self)
         navigationController.pushViewController(listVC, animated: true)

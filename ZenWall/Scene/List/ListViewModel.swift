@@ -8,10 +8,11 @@
 import Foundation
 
 final class ListViewModel {
-    
+
     // MARK: - Properties
     var photos: [UnsplashPhoto] = []
     var selectedTopic = ""
+    var selectedTopicForUI = ""
     var currentPage = 1
     var onPhotoSelected: ((UnsplashPhoto) -> Void)?
     
