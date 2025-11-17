@@ -103,7 +103,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         return btn
     }()
     
-    // Constraints
     private var scrollTopConstraint: NSLayoutConstraint!
     private var scrollLeadingConstraint: NSLayoutConstraint!
     private var scrollTrailingConstraint: NSLayoutConstraint!
@@ -113,11 +112,18 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         applyTransparentNavBar()
-        disableLargeTitle()
         setupUI()
         setupBindings()
         setupGestures()
         viewModel.loadImage()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        applyTransparentNavBar()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        applyTransparentNavBar()
     }
 
     // MARK: - Setup

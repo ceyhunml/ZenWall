@@ -34,13 +34,6 @@ final class CategoriesViewController: UIViewController {
         viewModel.fetchNewCategories()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        applyColoredNavBar()
-        enableLargeTitle()
-        title = "Categories"
-    }
-    
     private func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
@@ -49,6 +42,10 @@ final class CategoriesViewController: UIViewController {
         viewModel.failure = { errorMsg in
             print("ERROR: \(errorMsg)")
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        setupNavigationBar()
     }
     
     // MARK: - CollectionView + Gradient
