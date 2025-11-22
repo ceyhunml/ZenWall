@@ -5,10 +5,11 @@
 //  Created by Ceyhun Məmmədli on 09.11.25.
 //
 
-import Foundation
 import UIKit
 import Kingfisher
+import Photos
 
+// MARK: - UIImageView (Şəkli göstərmək)
 extension UIImageView {
     func setUnsplashImage(_ urlString: String?,
                           placeholder: UIImage? = nil) {

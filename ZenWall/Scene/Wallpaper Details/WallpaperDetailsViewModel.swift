@@ -7,16 +7,17 @@
 
 import Foundation
 import UIKit
+import Photos
 
 final class WallpaperDetailsViewModel {
-
+    
     let imageURL: String?
     var onImageURL: ((String?) -> Void)?
-
+    
     init(photo: UnsplashPhoto) {
-        self.imageURL = photo.urls?.regular
+        self.imageURL = photo.urls?.full
     }
-
+    
     func loadImage() {
         onImageURL?(imageURL)
     }

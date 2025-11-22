@@ -129,6 +129,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .black
+        fullButton.addTarget(self, action: #selector(saveFullImage), for: .touchUpInside)
         
         [backgroundImageView, blurView, scrollView, containerView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -243,6 +244,19 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
             
             self.view.layoutIfNeeded()
         })
+    }
+    
+    // MARK: - Photo Download
+    @objc func saveFullImage() {
+        guard let url = viewModel.imageURL else { return }
+        
+        UIImage.downloadAndSave(from: url) { success in
+            if success {
+                self.alertFor(title: "Success", message: "Photo added to your library!")
+            } else {
+                self.alertFor(title: "Oops!", message: "Failed to save photo.")
+            }
+        }
     }
     
     // MARK: - Zoom Delegate
