@@ -58,13 +58,7 @@ final class CustomTabBar: UITabBarController {
         
         let categoriesNav = UINavigationController()
         let categoriesCoordinator = CategoriesCoordinator(navigationController: categoriesNav)
-        
-        let categoriesVC = CategoriesViewController(
-            viewModel: CategoriesViewModel(),
-            coordinator: categoriesCoordinator
-        )
-        categoriesNav.viewControllers = [categoriesVC]
-        
+        categoriesCoordinator.start()        
         categoriesNav.tabBarItem = UITabBarItem(
             title: "Categories",
             image: UIImage(systemName: "circle.grid.2x2"),

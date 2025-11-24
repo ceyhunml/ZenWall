@@ -17,27 +17,15 @@ final class CategoriesCoordinator: Coordinator {
     }
     
     func start() {
-        let vm = CategoriesViewModel(coordinator: self)
-        let vc = CategoriesViewController(viewModel: vm, coordinator: self)
-
-        navigationController.setViewControllers([vc], animated: false)
+        let categoriesVC = CategoriesViewController(viewModel: CategoriesViewModel())
+        navigationController.pushViewController(categoriesVC, animated: false)
     }
     
     func showList(for topicSlug: String, topicName: String) {
-        let listVM = ListViewModel(onPhotoSelected: { [weak self] photo in
-            self?.showWallpaperDetail(for: photo)
-        })
-        
+        let listVM = ListViewModel()
         listVM.selectedTopic = topicSlug
         listVM.selectedTopicForUI = topicName
-        
-        let listVC = ListViewController(viewModel: listVM, coordinator: self)
+        let listVC = ListViewController(viewModel: listVM)
         navigationController.pushViewController(listVC, animated: true)
-    }
-    
-    func showWallpaperDetail(for photo: UnsplashPhoto) {
-        let detailVM = WallpaperDetailsViewModel(photo: photo)
-        let detailVC = WallpaperDetailsViewController(viewModel: detailVM)
-        navigationController.pushViewController(detailVC, animated: true)
     }
 }

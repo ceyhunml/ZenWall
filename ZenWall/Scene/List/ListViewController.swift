@@ -10,11 +10,9 @@ import UIKit
 class ListViewController: UIViewController {
     
     private let viewModel: ListViewModel
-    private let coordinator: CategoriesCoordinator
     
-    init(viewModel: ListViewModel, coordinator: CategoriesCoordinator) {
+    init(viewModel: ListViewModel) {
         self.viewModel = viewModel
-        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -117,7 +115,8 @@ extension ListViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        coordinator.showWallpaperDetail(for: viewModel.photos[indexPath.row])
+        let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.photos[indexPath.row])
+        coordinator.start()
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

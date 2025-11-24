@@ -10,11 +10,9 @@ import UIKit
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModel
-    private let coordinator: HomeCoordinator
     
-    init(viewModel: HomeViewModel, coordinator: HomeCoordinator) {
+    init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -176,10 +174,12 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 1 {
             guard let photoOfDay = viewModel.photoOfDay else { return }
-            coordinator.showWallpaperDetail(for: photoOfDay)
+            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: photoOfDay)
+            coordinator.start()
         }
         if indexPath.section == 2 {
-            coordinator.showWallpaperDetail(for: viewModel.photos[indexPath.row])
+            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.photos[indexPath.row])
+            coordinator.start()
         }
     }
     

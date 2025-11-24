@@ -11,12 +11,10 @@ final class CategoriesViewController: UIViewController {
     
     private var collectionView: UICollectionView!
     private let viewModel: CategoriesViewModel
-    private let coordinator: CategoriesCoordinator
     
     // MARK: - Init
-    init(viewModel: CategoriesViewModel, coordinator: CategoriesCoordinator) {
+    init(viewModel: CategoriesViewModel) {
         self.viewModel = viewModel
-        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -156,6 +154,7 @@ extension CategoriesViewController: UICollectionViewDataSource, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let slug = viewModel.categories[indexPath.item].slug ?? ""
         let topicName = viewModel.categories[indexPath.item].title ?? ""
+        let coordinator = CategoriesCoordinator(navigationController: navigationController ?? UINavigationController())
         coordinator.showList(for: slug, topicName: topicName)
     }
 }
