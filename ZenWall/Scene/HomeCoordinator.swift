@@ -18,6 +18,6 @@ final class HomeCoordinator: Coordinator {
     
     func start() {
         let homeVC = HomeViewController(viewModel: HomeViewModel())
-        navigationController.pushViewController(homeVC, animated: false)
+        navigationController.show(homeVC, sender: false)
     }
 }

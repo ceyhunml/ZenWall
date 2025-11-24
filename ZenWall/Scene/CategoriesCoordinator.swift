@@ -26,6 +26,6 @@ final class CategoriesCoordinator: Coordinator {
         listVM.selectedTopic = topicSlug
         listVM.selectedTopicForUI = topicName
         let listVC = ListViewController(viewModel: listVM)
-        navigationController.pushViewController(listVC, animated: true)
+        navigationController.show(listVC, sender: nil)
     }
 }

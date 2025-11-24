@@ -11,7 +11,6 @@ import UIKit
 class WallpaperDetailsCoordinator: Coordinator {
     
     var photo: UnsplashPhoto
-    
     var navigationController: UINavigationController
     
     init(navigationController: UINavigationController, photo: UnsplashPhoto) {
