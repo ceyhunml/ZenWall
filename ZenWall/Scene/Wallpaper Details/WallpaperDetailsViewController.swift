@@ -93,7 +93,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     
     private lazy var fullButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Download Full Size", for: .normal)
+        btn.setTitle("Download Maximum Quality", for: .normal)
         btn.backgroundColor = UIColor(white: 1, alpha: 0.2)
         btn.layer.cornerRadius = 12
         btn.tintColor = .white
@@ -102,7 +102,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     
     private lazy var fitButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setTitle("Download Fit to Screen", for: .normal)
+        btn.setTitle("Download Low Quality", for: .normal)
         btn.backgroundColor = UIColor(white: 1, alpha: 0.1)
         btn.layer.cornerRadius = 12
         btn.tintColor = UIColor(white: 1, alpha: 0.7)
