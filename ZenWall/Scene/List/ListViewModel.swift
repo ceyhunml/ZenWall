@@ -11,17 +11,13 @@ final class ListViewModel {
 
     // MARK: - Properties
     var photos: [UnsplashPhoto] = []
-    var selectedTopic = ""
-    var selectedTopicForUI = ""
+    var selectedTopic: String
+    var selectedTopicForUI: String
     var currentPage = 1
-    var onPhotoSelected: ((UnsplashPhoto) -> Void)?
     
-    init(onPhotoSelected: ((UnsplashPhoto) -> Void)? = nil) {
-        self.onPhotoSelected = onPhotoSelected
-    }
-    
-    required init(onPhotoSelected: @escaping ((String) -> Void)) {
-        onPhotoSelected(String())
+    init (selectedTopic: String, selectedTopicForUI: String) {
+        self.selectedTopic = selectedTopic
+        self.selectedTopicForUI = selectedTopicForUI
     }
     
     var success: (() -> Void)?

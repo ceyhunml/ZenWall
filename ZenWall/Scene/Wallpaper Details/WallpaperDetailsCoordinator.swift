@@ -21,6 +21,7 @@ class WallpaperDetailsCoordinator: Coordinator {
     func start() {
         let detailVM = WallpaperDetailsViewModel(photo: photo)
         let detailVC = WallpaperDetailsViewController(viewModel: detailVM)
+        detailVC.hidesBottomBarWhenPushed = true
         navigationController.show(detailVC, sender: true)
     }
 }
