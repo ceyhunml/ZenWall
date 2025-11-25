@@ -18,14 +18,11 @@ final class CategoriesCoordinator: Coordinator {
     
     func start() {
         let categoriesVC = CategoriesViewController(viewModel: CategoriesViewModel())
-        navigationController.pushViewController(categoriesVC, animated: false)
+        navigationController.show(categoriesVC, sender: nil)
     }
     
     func showList(for topicSlug: String, topicName: String) {
-        let listVM = ListViewModel()
-        listVM.selectedTopic = topicSlug
-        listVM.selectedTopicForUI = topicName
-        let listVC = ListViewController(viewModel: listVM)
+        let listVC = ListViewController(viewModel: .init(selectedTopic: topicSlug, selectedTopicForUI: topicName))
         navigationController.show(listVC, sender: nil)
     }
 }

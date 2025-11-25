@@ -100,7 +100,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         return btn
     }()
     
-    private lazy var fitButton: UIButton = {
+    private lazy var lowButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Download Low Quality", for: .normal)
         btn.backgroundColor = UIColor(white: 1, alpha: 0.1)
@@ -124,12 +124,12 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         viewModel.loadImage()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         applyTransparentNavBar()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        applyTransparentNavBar()
+    override func viewWillDisappear(_ animated: Bool) {
+        setupDefaultBar()
     }
     
     // MARK: - Setup
@@ -155,7 +155,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         ])
         
         scrollView.addSubview(wallpaperImageView)
-        [titleLabel, subtitleLabel, fullButton, fitButton].forEach {
+        [titleLabel, subtitleLabel, fullButton, lowButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             containerView.addSubview($0)
         }
@@ -165,7 +165,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         scrollTopConstraint = scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8)
         scrollLeadingConstraint = scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         scrollTrailingConstraint = scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        scrollHeightConstraint = scrollView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6)
+        scrollHeightConstraint = scrollView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5)
         
         NSLayoutConstraint.activate([
             scrollTopConstraint,
@@ -196,10 +196,11 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
             fullButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
             fullButton.heightAnchor.constraint(equalToConstant: 50),
             
-            fitButton.topAnchor.constraint(equalTo: fullButton.bottomAnchor, constant: 12),
-            fitButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
-            fitButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
-            fitButton.heightAnchor.constraint(equalToConstant: 50)
+            lowButton.topAnchor.constraint(equalTo: fullButton.bottomAnchor, constant: 12),
+            lowButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24),
+            lowButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24),
+            lowButton.bottomAnchor.constraint(lessThanOrEqualTo: containerView.bottomAnchor, constant: -8),
+            lowButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -277,7 +278,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
                 self.scrollTrailingConstraint.constant = 0
                 self.scrollHeightConstraint.isActive = false
                 self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-                self.wallpaperImageView.layer.cornerRadius = 0
                 self.view.backgroundColor = .black
                 self.scrollView.maximumZoomScale = 3.0
             } else {

@@ -40,18 +40,11 @@ class ListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.largeTitleDisplayMode = .never
         setupCollectionView()
         setupGradientBackground()
         bindViewModel()
         viewModel.fetchImages()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        navigationItem.largeTitleDisplayMode = .never
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        navigationItem.largeTitleDisplayMode = .never
     }
     
     private func setupGradientBackground() {
