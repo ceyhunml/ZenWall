@@ -30,6 +30,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         iv.clipsToBounds = true
         iv.isOpaque = true
         iv.backgroundColor = .clear
+        iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
     
@@ -49,6 +50,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         sv.layer.masksToBounds = false
         sv.isOpaque = true
         sv.backgroundColor = .clear
+        sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
     
