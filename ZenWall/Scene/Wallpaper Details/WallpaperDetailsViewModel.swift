@@ -11,14 +11,14 @@ import Photos
 
 final class WallpaperDetailsViewModel {
     
-    let imageURL: String?
+    let imageURL: Urls?
     var onImageURL: ((String?) -> Void)?
     
     init(photo: UnsplashPhoto) {
-        self.imageURL = photo.urls?.full
+        self.imageURL = photo.urls
     }
     
     func loadImage() {
-        onImageURL?(imageURL)
+        onImageURL?(imageURL?.full)
     }
 }

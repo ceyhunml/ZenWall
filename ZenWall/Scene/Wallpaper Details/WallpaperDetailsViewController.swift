@@ -138,6 +138,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     private func setupUI() {
         view.backgroundColor = .black
         fullButton.addTarget(self, action: #selector(saveFullImage), for: .touchUpInside)
+        lowButton.addTarget(self, action: #selector(saveLowImage), for: .touchUpInside)
         
         [backgroundImageView, blurView, scrollView, containerView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -167,7 +168,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         scrollTopConstraint = scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8)
         scrollLeadingConstraint = scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         scrollTrailingConstraint = scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        scrollHeightConstraint = scrollView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5)
+        scrollHeightConstraint = scrollView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.55)
         
         NSLayoutConstraint.activate([
             scrollTopConstraint,
@@ -297,16 +298,25 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     }
     
     // MARK: - Photo Download
-    @objc func saveFullImage() {
-        guard let url = viewModel.imageURL else { return }
+    func saveImage(quality: DownloadQuality) {
+        guard let url = (quality == .full ? viewModel.imageURL?.full : viewModel.imageURL?.regular)
+        else { return }
         
-        UIImage.downloadAndSave(from: url) { success in
-            if success {
-                self.alertFor(title: "Success", message: "Photo added to your library!")
-            } else {
-                self.alertFor(title: "Oops!", message: "Failed to save photo.")
-            }
+        UIImage.downloadAndSave(from: url) { [weak self] success in
+            guard let self else { return }
+            
+            let title = success ? "Success" : "Oops!"
+            let message = success ? "Photo added to your library!" : "Failed to save photo."
+            self.alertFor(title: title, message: message)
         }
+    }
+    
+    @objc private func saveFullImage() {
+        saveImage(quality: .full)
+    }
+    
+    @objc private func saveLowImage() {
+        saveImage(quality: .regular)
     }
     
     // MARK: - Zoom Delegate
