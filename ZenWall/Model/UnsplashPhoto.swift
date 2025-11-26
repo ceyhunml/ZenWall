@@ -41,6 +41,11 @@ struct Urls: Codable {
     let thumb: String?
 }
 
+enum DownloadQuality {
+    case full
+    case regular
+}
+
 struct User: Codable {
     let id: String?
     let username: String?
