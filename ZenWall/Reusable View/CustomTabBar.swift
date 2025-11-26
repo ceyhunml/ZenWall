@@ -58,7 +58,7 @@ final class CustomTabBar: UITabBarController {
         
         let categoriesNav = UINavigationController()
         let categoriesCoordinator = CategoriesCoordinator(navigationController: categoriesNav)
-        categoriesCoordinator.start()        
+        categoriesCoordinator.start()
         categoriesNav.tabBarItem = UITabBarItem(
             title: "Categories",
             image: UIImage(systemName: "circle.grid.2x2"),
@@ -73,7 +73,7 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "heart.fill")
         )
         
-        let profileVC = UIViewController()
+        let profileVC = LoginViewController()
         profileVC.view.backgroundColor = .systemBackground
         profileVC.tabBarItem = UITabBarItem(
             title: "Profile",
