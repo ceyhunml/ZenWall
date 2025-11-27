@@ -1,16 +1,24 @@
 //
-//  FullnameViewController.swift
+//  EmailViewController.swift
 //  ZenWall
 //
 //  Created by Ceyhun Məmmədli on 27.11.25.
 //
 
-import Foundation
 import UIKit
 
-class FullnameViewController: UIViewController {
+class EmailViewController: UIViewController {
     
-    let builder = UserBuilder()
+    let viewModel: EmailViewModel
+    
+    init(viewModel: EmailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - UI Elements
     
@@ -155,11 +163,12 @@ class FullnameViewController: UIViewController {
     }
     
     @objc private func nextAction() {
-        guard let name = nameField.text, !name.isEmpty else {
+        guard let fullname = nameField.text, !name.isEmpty else {
             self.alertFor(title: "Oops!", message: "Please enter your full name.")
             return
         }
-        print("Full name:", name)
-        // Next step → push Step 2
+        print("Fullname:", fullname)
+        viewModel.coordinator.showEmail(fullname: fullname)
     }
+    
 }

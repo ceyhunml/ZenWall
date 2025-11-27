@@ -181,6 +181,7 @@ final class LoginViewController: UIViewController {
             view.addSubview($0)
         }
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
+        signupButton.addTarget(self, action: #selector(signup), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             
@@ -245,7 +246,7 @@ final class LoginViewController: UIViewController {
     }
     
     @objc private func signup() {
-        let coordinator = SignupCoordinator(navigationController: navigationController ?? UINavigationController(), builder: builder)
+        let coordinator = SignupCoordinator(navigationController: self.navigationController ?? UINavigationController(), builder: builder)
         coordinator.start()
     }
 }
