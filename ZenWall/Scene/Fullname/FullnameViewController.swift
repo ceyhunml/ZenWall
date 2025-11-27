@@ -14,23 +14,6 @@ class FullnameViewController: UIViewController {
     
     // MARK: - UI Elements
     
-    private lazy var backButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        btn.tintColor = .white
-        btn.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-        return btn
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.text = "Step 1 of 3"
-        lbl.textColor = .white
-        lbl.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        lbl.textAlignment = .center
-        return lbl
-    }()
-    
     private lazy var nameTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "What's your name?"
@@ -87,16 +70,6 @@ class FullnameViewController: UIViewController {
         setupGradientBackground()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-    
     // MARK: - Setup UI
     private func setupGradientBackground() {
         let gradient = CAGradientLayer()
@@ -111,7 +84,8 @@ class FullnameViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        [backButton, titleLabel, nameTitleLabel, subtitleLabel,
+        title = "Step 1 of 3"
+        [nameTitleLabel, subtitleLabel,
          fieldHeaderLabel, nameField, nextButton]
             .forEach { sub in
                 sub.translatesAutoresizingMaskIntoConstraints = false
@@ -120,15 +94,7 @@ class FullnameViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            backButton.widthAnchor.constraint(equalToConstant: 32),
-            backButton.heightAnchor.constraint(equalToConstant: 32),
-            
-            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            nameTitleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 32),
+            nameTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
             nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             subtitleLabel.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 6),
@@ -150,9 +116,6 @@ class FullnameViewController: UIViewController {
     }
     
     // MARK: - Actions
-    @objc private func backAction() {
-        navigationController?.popViewController(animated: true)
-    }
     
     @objc private func nextAction() {
         guard let fullname = nameField.text, !fullname.isEmpty else {
