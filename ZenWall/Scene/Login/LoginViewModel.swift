@@ -9,17 +9,15 @@ import Foundation
 
 class LoginViewModel {
     
-    let manager = AuthManager.shared
+    private let manager = AuthManager.shared
     
-    func signIn(email: String, password: String) {
-        manager.signIn(email: email, password: password) { userId in
+    func signIn(email: String, password: String, completion: @escaping (String?, String?) -> Void) {
+        manager.signIn(email: email, password: password) { userId, error  in
             if let userId {
                 UserDefaults.standard.set(userId, forKey: "userId")
-//                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-//                    sceneDelegate.window?.rootViewController = sceneDelegate.createTabBar()
-                print("Login success!")
+                completion(userId, nil)
             } else {
-                print("Login failed!")
+                completion(nil, error)
             }
         }
     }

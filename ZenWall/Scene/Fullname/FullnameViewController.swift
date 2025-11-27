@@ -1,0 +1,153 @@
+//
+//  FullnameViewController.swift
+//  ZenWall
+//
+//  Created by Ceyhun Məmmədli on 27.11.25.
+//
+
+import Foundation
+import UIKit
+
+class FullnameViewController: UIViewController {
+    
+    // MARK: - UI Elements
+    
+    private lazy var backButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        btn.tintColor = .white
+        btn.addTarget(self, action: #selector(backAction), for: .touchUpInside)
+        return btn
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "Step 1 of 3"
+        lbl.textColor = .white
+        lbl.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        lbl.textAlignment = .center
+        return lbl
+    }()
+    
+    private lazy var nameTitleLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "What's your name?"
+        lbl.textColor = .white
+        lbl.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        return lbl
+    }()
+    
+    private lazy var subtitleLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "Let's get to know each other."
+        lbl.textColor = UIColor(white: 1, alpha: 0.65)
+        lbl.font = UIFont.systemFont(ofSize: 16)
+        return lbl
+    }()
+    
+    private lazy var fieldHeaderLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "Full Name"
+        lbl.textColor = UIColor(red: 0.43, green: 0.83, blue: 0.76, alpha: 1) // Primary
+        lbl.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        return lbl
+    }()
+    
+    private lazy var nameField: UITextField = {
+        let tf = UITextField()
+        tf.placeholder = "Enter your full name"
+        tf.textColor = .white
+        tf.backgroundColor = UIColor(red: 0.11, green: 0.16, blue: 0.15, alpha: 1)
+        tf.layer.cornerRadius = 16
+        tf.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
+        tf.leftViewMode = .always
+        tf.autocapitalizationType = .words
+        tf.autocorrectionType = .no
+        tf.font = UIFont.systemFont(ofSize: 17)
+        return tf
+    }()
+    
+    private lazy var nextButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Next", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        btn.backgroundColor = UIColor(red: 0.07, green: 0.83, blue: 0.32, alpha: 1)
+        btn.tintColor = UIColor(red: 0.07, green: 0.13, blue: 0.10, alpha: 1)
+        btn.layer.cornerRadius = 28
+        btn.addTarget(self, action: #selector(nextAction), for: .touchUpInside)
+        return btn
+    }()
+    
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+    }
+    
+    // MARK: - Setup UI
+    private func setupUI() {
+        view.backgroundColor = UIColor(red: 0.07, green: 0.10, blue: 0.09, alpha: 1)
+        
+        [backButton, titleLabel, nameTitleLabel, subtitleLabel,
+         fieldHeaderLabel, nameField, nextButton]
+            .forEach { sub in
+                sub.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(sub)
+            }
+        
+        setupConstraints()
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            
+            // Back button
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            backButton.widthAnchor.constraint(equalToConstant: 32),
+            backButton.heightAnchor.constraint(equalToConstant: 32),
+            
+            // Step title
+            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // Page title
+            nameTitleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 32),
+            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            // Subtitle
+            subtitleLabel.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 6),
+            subtitleLabel.leadingAnchor.constraint(equalTo: nameTitleLabel.leadingAnchor),
+            
+            // Field header
+            fieldHeaderLabel.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
+            fieldHeaderLabel.leadingAnchor.constraint(equalTo: nameTitleLabel.leadingAnchor),
+            
+            // Name field
+            nameField.topAnchor.constraint(equalTo: fieldHeaderLabel.bottomAnchor, constant: 6),
+            nameField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nameField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nameField.heightAnchor.constraint(equalToConstant: 56),
+            
+            // Next button
+            nextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            nextButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            nextButton.heightAnchor.constraint(equalToConstant: 56)
+        ])
+    }
+    
+    // MARK: - Actions
+    @objc private func backAction() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func nextAction() {
+        guard let name = nameField.text, !name.isEmpty else {
+            self.alertFor(title: "Oops!", message: "Please enter your full name.")
+            return
+        }
+        print("Full name:", name)
+        // Next step → push Step 2
+    }
+}

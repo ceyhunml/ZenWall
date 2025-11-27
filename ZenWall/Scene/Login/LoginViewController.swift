@@ -10,6 +10,7 @@ import UIKit
 final class LoginViewController: UIViewController {
     
     let viewModel = LoginViewModel()
+    let builder = UserBuilder()
     
     // MARK: - Title
     private let titleLabel: UILabel = {
@@ -227,9 +228,24 @@ final class LoginViewController: UIViewController {
     }
     
     @objc private func login() {
-        if let email = emailField.text,
-           let password = passwordField.text {
-            viewModel.signIn(email: email, password: password)
+        guard let email = emailField.text,
+              let password = passwordField.text else { return }
+        
+        viewModel.signIn(email: email, password: password) { [weak self] success, error in
+            guard let self else { return }
+            if success != nil {
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    sceneDelegate.window?.rootViewController = CustomTabBar()
+                    sceneDelegate.window?.makeKeyAndVisible()
+                }
+            } else if let error {
+                self.alertFor(title: "Oops!", message: error)
+            }
         }
+    }
+    
+    @objc private func signup() {
+        let coordinator = SignupCoordinator(navigationController: navigationController ?? UINavigationController(), builder: builder)
+        coordinator.start()
     }
 }
