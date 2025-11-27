@@ -32,16 +32,16 @@ class EmailViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let lbl = UILabel()
-        lbl.text = "Step 1 of 3"
+        lbl.text = "Step 2 of 3"
         lbl.textColor = .white
         lbl.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         lbl.textAlignment = .center
         return lbl
     }()
     
-    private lazy var nameTitleLabel: UILabel = {
+    private lazy var emailTitleLabel: UILabel = {
         let lbl = UILabel()
-        lbl.text = "What's your name?"
+        lbl.text = "What's your email?"
         lbl.textColor = .white
         lbl.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         return lbl
@@ -49,7 +49,8 @@ class EmailViewController: UIViewController {
     
     private lazy var subtitleLabel: UILabel = {
         let lbl = UILabel()
-        lbl.text = "Let's get to know each other."
+        lbl.text = "For account recovery and updates on your favorite wallpapers."
+        lbl.numberOfLines = 0
         lbl.textColor = UIColor(white: 1, alpha: 0.65)
         lbl.font = UIFont.systemFont(ofSize: 16)
         return lbl
@@ -57,15 +58,15 @@ class EmailViewController: UIViewController {
     
     private lazy var fieldHeaderLabel: UILabel = {
         let lbl = UILabel()
-        lbl.text = "Full Name"
+        lbl.text = "Email address"
         lbl.textColor = .white
         lbl.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         return lbl
     }()
     
-    private lazy var nameField: UITextField = {
+    private lazy var emailField: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "Enter your full name"
+        tf.placeholder = "Enter your email"
         tf.textColor = .white
         tf.backgroundColor = UIColor(red: 0.11, green: 0.16, blue: 0.15, alpha: 1)
         tf.layer.cornerRadius = 16
@@ -119,8 +120,8 @@ class EmailViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        [backButton, titleLabel, nameTitleLabel, subtitleLabel,
-         fieldHeaderLabel, nameField, nextButton]
+        [backButton, titleLabel, emailTitleLabel, subtitleLabel,
+         fieldHeaderLabel, emailField, nextButton]
             .forEach { sub in
                 sub.translatesAutoresizingMaskIntoConstraints = false
                 view.addSubview(sub)
@@ -136,19 +137,20 @@ class EmailViewController: UIViewController {
             titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            nameTitleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 32),
-            nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            emailTitleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 32),
+            emailTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
-            subtitleLabel.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 6),
-            subtitleLabel.leadingAnchor.constraint(equalTo: nameTitleLabel.leadingAnchor),
+            subtitleLabel.topAnchor.constraint(equalTo: emailTitleLabel.bottomAnchor, constant: 6),
+            subtitleLabel.leadingAnchor.constraint(equalTo: emailTitleLabel.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -6),
             
             fieldHeaderLabel.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
-            fieldHeaderLabel.leadingAnchor.constraint(equalTo: nameTitleLabel.leadingAnchor),
+            fieldHeaderLabel.leadingAnchor.constraint(equalTo: emailTitleLabel.leadingAnchor),
             
-            nameField.topAnchor.constraint(equalTo: fieldHeaderLabel.bottomAnchor, constant: 6),
-            nameField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            nameField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            nameField.heightAnchor.constraint(equalToConstant: 56),
+            emailField.topAnchor.constraint(equalTo: fieldHeaderLabel.bottomAnchor, constant: 6),
+            emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            emailField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            emailField.heightAnchor.constraint(equalToConstant: 56),
             
             nextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             nextButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -163,12 +165,14 @@ class EmailViewController: UIViewController {
     }
     
     @objc private func nextAction() {
-        guard let fullname = nameField.text, !name.isEmpty else {
-            self.alertFor(title: "Oops!", message: "Please enter your full name.")
+        guard let email = emailField.text, !email.isEmpty else {
+            alertFor(title: "Oops!", message: "Please enter your email.")
             return
         }
-        print("Fullname:", fullname)
-        viewModel.coordinator.showEmail(fullname: fullname)
+        
+        guard email.isValidEmail else {
+            alertFor(title: "Invalid Email", message: "Please enter a valid email address.")
+            return
+        }
     }
-    
 }

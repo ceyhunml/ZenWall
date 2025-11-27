@@ -155,11 +155,12 @@ class FullnameViewController: UIViewController {
     }
     
     @objc private func nextAction() {
-        guard let name = nameField.text, !name.isEmpty else {
+        guard let fullname = nameField.text, !fullname.isEmpty else {
             self.alertFor(title: "Oops!", message: "Please enter your full name.")
             return
         }
-        print("Full name:", name)
-        // Next step → push Step 2
+        print("Fullname:", fullname)
+        let coordinator = SignupCoordinator(navigationController: navigationController ?? UINavigationController(), builder: builder)
+        coordinator.showEmail(fullname: fullname)
     }
 }
