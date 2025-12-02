@@ -9,6 +9,7 @@ import UIKit
 
 class EmailViewController: UIViewController {
     
+    let builder = UserBuilder()
     let viewModel: EmailViewModel
     
     init(viewModel: EmailViewModel) {
@@ -21,23 +22,6 @@ class EmailViewController: UIViewController {
     }
     
     // MARK: - UI Elements
-    
-    private lazy var backButton: UIButton = {
-        let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
-        btn.tintColor = .white
-        btn.addTarget(self, action: #selector(backAction), for: .touchUpInside)
-        return btn
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.text = "Step 2 of 3"
-        lbl.textColor = .white
-        lbl.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        lbl.textAlignment = .center
-        return lbl
-    }()
     
     private lazy var emailTitleLabel: UILabel = {
         let lbl = UILabel()
@@ -92,18 +76,10 @@ class EmailViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         setupConstraints()
         setupGradientBackground()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     // MARK: - Setup UI
@@ -120,7 +96,8 @@ class EmailViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        [backButton, titleLabel, emailTitleLabel, subtitleLabel,
+        title = "Step 1 of 3"
+        [emailTitleLabel, subtitleLabel,
          fieldHeaderLabel, emailField, nextButton]
             .forEach { sub in
                 sub.translatesAutoresizingMaskIntoConstraints = false
@@ -129,15 +106,7 @@ class EmailViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            backButton.widthAnchor.constraint(equalToConstant: 32),
-            backButton.heightAnchor.constraint(equalToConstant: 32),
-            
-            titleLabel.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            emailTitleLabel.topAnchor.constraint(equalTo: backButton.bottomAnchor, constant: 32),
+            emailTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             emailTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             subtitleLabel.topAnchor.constraint(equalTo: emailTitleLabel.bottomAnchor, constant: 6),
@@ -174,5 +143,21 @@ class EmailViewController: UIViewController {
             alertFor(title: "Invalid Email", message: "Please enter a valid email address.")
             return
         }
+        
+        viewModel.onEmailCheck = { [weak self] exists, error in
+            guard let self else { return }
+            
+            if let error {
+                self.alertFor(title: "Error", message: error)
+                return
+            }
+            
+            if exists {
+                self.alertFor(title: "Oops!", message: "This email is already registered.")
+            } else {
+                viewModel.coordinator.showFullname(email: email)
+            }
+        }
+        viewModel.checkEmail(email)
     }
 }

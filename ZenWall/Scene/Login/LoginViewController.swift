@@ -160,6 +160,7 @@ final class LoginViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.backButtonTitle = ""
         setupGradientBackground()
         setupUI()
     }

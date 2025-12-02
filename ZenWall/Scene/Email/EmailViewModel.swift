@@ -15,4 +15,15 @@ class EmailViewModel {
         self.coordinator = coordinator
     }
     
+    private let manager = AuthManager.shared
+    
+    var email: String?
+    
+    var onEmailCheck: ((Bool, String?) -> Void)?
+    
+    func checkEmail(_ email: String) {
+        manager.checkEmailExists(email) { exists, error in
+            self.onEmailCheck?(exists, error)
+        }
+    }
 }

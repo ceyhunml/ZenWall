@@ -34,4 +34,30 @@ class AuthManager {
             }
         }
     }
+    
+    func checkEmailExists(_ email: String, completion: @escaping (Bool, String?) -> Void) {
+        let tempPassword = "TEST1234"
+        
+        Auth.auth().createUser(withEmail: email, password: tempPassword) { result, error in
+            
+            if let error = error as NSError? {
+                
+                switch AuthErrorCode(rawValue: error.code) {
+                    
+                case .emailAlreadyInUse:
+                    completion(true, nil)
+                    
+                case .invalidEmail:
+                    completion(false, "Invalid email format.")
+                    
+                default:
+                    completion(false, error.localizedDescription)
+                }
+                
+            } else {
+                result?.user.delete { _ in }
+                completion(false, nil)
+            }
+        }
+    }
 }

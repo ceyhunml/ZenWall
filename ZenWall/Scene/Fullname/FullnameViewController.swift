@@ -10,7 +10,18 @@ import UIKit
 
 class FullnameViewController: UIViewController {
     
-    let builder = UserBuilder()
+    let viewModel: FullnameViewModel
+    let builder: UserBuilder
+    
+    init(viewModel: FullnameViewModel, builder: UserBuilder) {
+        self.viewModel = viewModel
+        self.builder = builder
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - UI Elements
     
@@ -66,6 +77,8 @@ class FullnameViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         setupConstraints()
         setupGradientBackground()
     }
@@ -84,7 +97,7 @@ class FullnameViewController: UIViewController {
     }
     
     private func setupConstraints() {
-        title = "Step 1 of 3"
+        title = "Step 2 of 3"
         [nameTitleLabel, subtitleLabel,
          fieldHeaderLabel, nameField, nextButton]
             .forEach { sub in
@@ -94,7 +107,7 @@ class FullnameViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            nameTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            nameTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
             nameTitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             
             subtitleLabel.topAnchor.constraint(equalTo: nameTitleLabel.bottomAnchor, constant: 6),
@@ -124,6 +137,5 @@ class FullnameViewController: UIViewController {
         }
         print("Fullname:", fullname)
         let coordinator = SignupCoordinator(navigationController: navigationController ?? UINavigationController(), builder: builder)
-        coordinator.showEmail(fullname: fullname)
     }
 }

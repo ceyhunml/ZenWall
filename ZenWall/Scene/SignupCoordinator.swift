@@ -18,16 +18,17 @@ class SignupCoordinator: Coordinator {
     }
     
     func start() {
-        let vc = FullnameViewController()
-        navigationController.show(vc, sender: nil)
-    }
-
-    func showEmail(fullname: String) {
-        builder.setFullname(fullname: fullname)
         let controller = EmailViewController(viewModel: .init(coordinator: self))
         navigationController.show(controller, sender: nil)
     }
-//    
+
+    func showFullname(email: String) {
+        let vc = FullnameViewController(viewModel: .init(coordinator: self), builder: builder)
+        navigationController.show(vc, sender: nil)
+    }
+    
+    
+//
 //    func showSuccess(card: String) {
 //        builder.setCard(card: card)
 //        let controller = SuccessController(builder: builder)
