@@ -5,7 +5,6 @@
 //  Created by Ceyhun Məmmədli on 27.11.25.
 //
 
-import Foundation
 import UIKit
 
 class SignupCoordinator: Coordinator {
@@ -23,18 +22,14 @@ class SignupCoordinator: Coordinator {
     }
 
     func showFullname(email: String) {
+        builder.setEmail(email: email)
         let vc = FullnameViewController(viewModel: .init(coordinator: self), builder: builder)
         navigationController.show(vc, sender: nil)
     }
-    
-    
-//
-//    func showSuccess(card: String) {
-//        builder.setCard(card: card)
-//        let controller = SuccessController(builder: builder)
-//        controller.close = { [weak self] in
-//            self?.navigationController.popToRootViewController(animated: true)
-//        }
-//        navigationController.present(controller, animated: true)
-//    }
+
+    func showPassword(fullname: String) {
+        builder.setFullname(fullname: fullname)
+        let vc = PasswordViewController(viewModel: .init(coordinator: self), builder: builder)
+        navigationController.show(vc, sender: nil)
+    }
 }

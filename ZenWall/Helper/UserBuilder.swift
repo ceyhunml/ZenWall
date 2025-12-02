@@ -26,10 +26,20 @@ class UserBuilder {
         self.password = password
     }
     
-    func build() -> [String: String] {
+    func build(completion: @escaping (Bool, String?, String?, String?) -> Void) {
         guard let fullname = fullname,
               let email = email,
-              let password = password else { return [:]}
-        return ["fullname": fullname, "email": email, "password": password]
+              let password = password else {
+            completion(false, "Missing fields", nil, nil)
+            return
+        }
+
+        manager.signUp(email: email, password: password) { error in
+            if let error {
+                completion(false, error, nil, nil)
+            } else {
+                completion(true, nil, email, password)
+            }
+        }
     }
 }

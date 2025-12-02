@@ -165,6 +165,18 @@ final class LoginViewController: UIViewController {
         setupUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let email = viewModel.prefillEmail {
+            emailField.text = email
+        }
+
+        if let password = viewModel.prefillPassword {
+            passwordField.text = password
+        }
+    }
+    
     // MARK: - Layout
     private func setupUI() {
         
