@@ -46,6 +46,7 @@ final class HomeViewController: UIViewController {
         setupCollectionView()
         bindViewModel()
         viewModel.fetchRandomPhotos()
+        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
