@@ -80,6 +80,7 @@ class EmailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         setupConstraints()
         setupGradientBackground()
+        hideKeyboardWhenTappedAround()
     }
     
     // MARK: - Setup UI

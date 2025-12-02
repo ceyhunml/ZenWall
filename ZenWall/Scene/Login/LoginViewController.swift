@@ -163,6 +163,7 @@ final class LoginViewController: UIViewController {
         navigationItem.backButtonTitle = ""
         setupGradientBackground()
         setupUI()
+        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
