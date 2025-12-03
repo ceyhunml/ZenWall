@@ -302,11 +302,33 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         guard let url = (quality == .full ? viewModel.imageURL?.full : viewModel.imageURL?.regular)
         else { return }
         
-        UIImage.downloadAndSave(from: url) { [weak self] success in
+        UIImage.downloadAndSave(from: url) { [weak self] result in
             guard let self else { return }
             
-            let title = success ? "Success" : "Oops!"
-            let message = success ? "Photo added to your library!" : "Failed to save photo."
+            let (title, message): (String, String)
+            
+            switch result {
+            case .success:
+                title = "Success"
+                message = "Photo added to your library!"
+                
+            case .denied:
+                title = "Permission Denied"
+                message = "Please allow access to your Photo Library."
+                
+            case .invalidURL:
+                title = "Invalid URL"
+                message = "Something went wrong. The image URL is invalid."
+                
+            case .downloadFailed:
+                title = "Download Failed"
+                message = "Could not download photo. Please try again."
+                
+            case .saveFailed:
+                title = "Error"
+                message = "Failed to save image to your gallery."
+            }
+            
             self.alertFor(title: title, message: message)
         }
     }
