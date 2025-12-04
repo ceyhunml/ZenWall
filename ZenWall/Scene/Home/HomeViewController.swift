@@ -36,6 +36,7 @@ final class HomeViewController: UIViewController {
     
     private lazy var refreshControl: UIRefreshControl = {
         let rc = UIRefreshControl()
+        rc.tintColor = .white
         return rc
     }()
     
@@ -53,7 +54,7 @@ final class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -88,6 +89,10 @@ final class HomeViewController: UIViewController {
     }
     
     @objc private func refreshData() {
+        let indexPath = IndexPath(item: 0, section: 0)
+        if let headerCell = collectionView.cellForItem(at: indexPath) as? HeaderCell {
+            headerCell.resetSearch()
+        }
         viewModel.refresh()
     }
     

@@ -10,13 +10,6 @@ import UIKit
 
 final class CustomSearchBar: UIView {
     
-    // MARK: - Public properties
-    var text: String {
-        textField.text ?? ""
-    }
-    
-    var onTextChanged: ((String) -> Void)?
-    
     // MARK: - UI
     private let iconImageView: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "magnifyingglass"))
@@ -25,7 +18,7 @@ final class CustomSearchBar: UIView {
         return iv
     }()
     
-    private let textField: UITextField = {
+    let textField: UITextField = {
         let tf = UITextField()
         tf.textColor = .white
         tf.tintColor = .white
@@ -42,6 +35,13 @@ final class CustomSearchBar: UIView {
         )
         return tf
     }()
+    
+    // MARK: - Public properties
+    var text: String {
+        textField.text ?? ""
+    }
+    
+    var onTextChanged: ((String) -> Void)?
     
     // MARK: - Init
     override init(frame: CGRect) {
