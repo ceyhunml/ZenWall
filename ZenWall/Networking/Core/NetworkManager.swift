@@ -21,6 +21,7 @@ final class NetworkManager {
         encoding: ParameterEncoding = URLEncoding.default,
         completion: @escaping (T?, String?) -> Void
     ) {
+
         AF.request(url,
                    method: method,
                    parameters: parameters,

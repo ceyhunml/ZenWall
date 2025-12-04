@@ -168,11 +168,11 @@ final class LoginViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         if let email = viewModel.prefillEmail {
             emailField.text = email
         }
-
+        
         if let password = viewModel.prefillPassword {
             passwordField.text = password
         }
@@ -249,9 +249,12 @@ final class LoginViewController: UIViewController {
         viewModel.signIn(email: email, password: password) { [weak self] success, error in
             guard let self else { return }
             if success != nil {
+                UserSessionManager.shared.isLoggedIn = true
+                
                 if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-                    sceneDelegate.window?.rootViewController = CustomTabBar()
-                    sceneDelegate.window?.makeKeyAndVisible()
+                    if let window = sceneDelegate.window {
+                        window.rootViewController = CustomTabBar()
+                    }
                 }
             } else if let error {
                 self.alertFor(title: "Oops!", message: error)
