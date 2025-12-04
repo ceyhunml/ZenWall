@@ -27,7 +27,7 @@ final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
     
     private lazy var searchTapButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+        btn.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         btn.tintColor = UIColor(white: 1.0, alpha: 0.85)
         btn.contentVerticalAlignment = .fill
         btn.contentHorizontalAlignment = .fill

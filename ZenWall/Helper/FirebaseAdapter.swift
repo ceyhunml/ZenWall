@@ -14,10 +14,12 @@ final class FirebaseAdapter: BackendService {
 
     static let shared = FirebaseAdapter()
 
-    private init() {
-        FirebaseApp.configure()
-    }
+    private init() {}
 
     var auth: Auth { Auth.auth() }
     var firestore: Firestore { Firestore.firestore() }
+    
+    func configure() {
+        FirebaseApp.configure()
+    }
 }
