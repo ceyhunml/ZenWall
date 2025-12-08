@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ListViewController: UIViewController {
+class ListViewController: BaseViewController {
     
     private let viewModel: ListViewModel
     
@@ -42,23 +42,8 @@ class ListViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
         setupCollectionView()
-        setupGradientBackground()
         bindViewModel()
         viewModel.fetchImages()
-    }
-    
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        let bgView = UIView(frame: view.bounds)
-        bgView.layer.addSublayer(gradient)
-        collectionView.backgroundView = bgView
     }
     
     private func setupCollectionView() {

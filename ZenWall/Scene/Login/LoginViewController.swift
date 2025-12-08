@@ -253,7 +253,9 @@ final class LoginViewController: UIViewController {
                 
                 if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
                     if let window = sceneDelegate.window {
-                        window.rootViewController = CustomTabBar()
+                        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+                            window.rootViewController = CustomTabBar()
+                        }, completion: nil)
                     }
                 }
             } else if let error {
