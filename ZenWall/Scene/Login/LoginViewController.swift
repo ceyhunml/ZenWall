@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class LoginViewController: UIViewController {
+final class LoginViewController: BaseViewController {
     
     let viewModel = LoginViewModel()
     let builder = UserBuilder()
@@ -118,17 +118,17 @@ final class LoginViewController: UIViewController {
         return btn
     }()
     
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        view.layer.insertSublayer(gradient, at: 0)
-    }
+//    private func setupGradientBackground() {
+//        let gradient = CAGradientLayer()
+//        gradient.colors = [
+//            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
+//            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
+//        ]
+//        gradient.locations = [0.0, 1.0]
+//        gradient.frame = view.bounds
+//        
+//        view.layer.insertSublayer(gradient, at: 0)
+//    }
     
     // MARK: - Forgot Password
     private let forgotPasswordLabel: UILabel = {

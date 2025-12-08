@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6109AF6E2EE6CCB000E25DE0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6109AF6D2EE6CCAF00E25DE0 /* GoogleService-Info.plist */; };
 		6173AEA92EBF2C3400C613A9 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 6173AEA82EBF2C3400C613A9 /* Alamofire */; };
 		6173AEAC2EBF2C4300C613A9 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 6173AEAB2EBF2C4300C613A9 /* Kingfisher */; };
 		61B66CCA2ED6F55400A30514 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 61B66CC92ED6F55400A30514 /* FirebaseAuth */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6109AF6D2EE6CCAF00E25DE0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6173AE032EBF232700C613A9 /* ZenWall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZenWall.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -60,6 +62,7 @@
 			children = (
 				6173AE052EBF232700C613A9 /* ZenWall */,
 				6173AE042EBF232700C613A9 /* Products */,
+				6109AF6D2EE6CCAF00E25DE0 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -145,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6109AF6E2EE6CCB000E25DE0 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

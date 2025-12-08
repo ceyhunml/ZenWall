@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeViewController: UIViewController {
+final class HomeViewController: BaseViewController {
     
     private let viewModel: HomeViewModel
     
@@ -61,20 +61,6 @@ final class HomeViewController: UIViewController {
     }
     
     // MARK: - Setup
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        let bgView = UIView(frame: view.bounds)
-        bgView.layer.addSublayer(gradient)
-        collectionView.backgroundView = bgView
-    }
-    
     private func setupCollectionView() {
         view.addSubview(collectionView)
         collectionView.refreshControl = refreshControl
@@ -140,7 +126,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperOfDayCell", for: indexPath) as! WallpaperOfDayCell
             if indexPath.row < viewModel.photos.count {
-                let url = viewModel.photoOfDay?.urls?.regular ?? ""
+                let url = viewModel.photoOfDay?.urls?.small ?? ""
                 cell.configure(imageURL: url)
             }
             return cell
@@ -148,7 +134,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         default:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperCell", for: indexPath) as! WallpaperCell
             if indexPath.row < viewModel.photos.count,
-               let url = viewModel.photos[indexPath.row].urls?.regular {
+               let url = viewModel.photos[indexPath.row].urls?.small {
                 cell.configure(imageURL: url)
             }
             return cell
@@ -178,13 +164,9 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.section == 1 {
-            guard let photoOfDay = viewModel.photoOfDay else { return }
-            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: photoOfDay)
-            coordinator.start()
-        }
-        if indexPath.section == 2 {
-            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.photos[indexPath.row])
+        guard let photoOfDay = viewModel.photoOfDay else { return }
+        if indexPath.section != 0 {
+            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: indexPath.section == 1 ? photoOfDay : viewModel.photos[indexPath.row])
             coordinator.start()
         }
     }
