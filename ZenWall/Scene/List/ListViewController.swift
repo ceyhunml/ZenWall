@@ -41,6 +41,7 @@ class ListViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
+        setupDefaultBar()
         setupCollectionView()
         bindViewModel()
         viewModel.fetchImages()
