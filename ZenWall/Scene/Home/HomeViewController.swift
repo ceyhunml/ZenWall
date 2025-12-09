@@ -126,7 +126,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 1:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperOfDayCell", for: indexPath) as! WallpaperOfDayCell
             if indexPath.row < viewModel.photos.count {
-                let url = viewModel.photoOfDay?.urls?.small ?? ""
+                let url = viewModel.photoOfDay?.urls?.regular ?? ""
                 cell.configure(imageURL: url)
             }
             return cell
@@ -134,7 +134,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         default:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperCell", for: indexPath) as! WallpaperCell
             if indexPath.row < viewModel.photos.count,
-               let url = viewModel.photos[indexPath.row].urls?.small {
+               let url = viewModel.photos[indexPath.row].urls?.raw {
                 cell.configure(imageURL: url)
             }
             return cell
