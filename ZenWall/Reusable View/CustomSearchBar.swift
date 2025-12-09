@@ -11,7 +11,7 @@ import UIKit
 final class CustomSearchBar: UIView {
     
     // MARK: - UI
-    private let iconImageView: UIImageView = {
+    private lazy var iconImageView: UIImageView = {
         let iv = UIImageView(image: UIImage(systemName: "magnifyingglass"))
         iv.tintColor = UIColor(white: 1.0, alpha: 0.8)
         iv.contentMode = .scaleAspectFit

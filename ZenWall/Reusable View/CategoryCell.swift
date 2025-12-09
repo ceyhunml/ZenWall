@@ -10,9 +10,29 @@ import UIKit
 
 final class CategoryCell: UICollectionViewCell {
     
-    private let imageView = UIImageView()
-    private let titleLabel = UILabel()
+    // MARK: - UI
+    private lazy var imageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        iv.layer.cornerRadius = 16
+        return iv
+    }()
     
+    private lazy var titleLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.textColor = .white
+        lbl.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        lbl.numberOfLines = 1
+        
+        lbl.layer.shadowColor = UIColor.black.cgColor
+        lbl.layer.shadowOpacity = 0.6
+        lbl.layer.shadowRadius = 2
+        lbl.layer.shadowOffset = CGSize(width: 0, height: 1)
+        return lbl
+    }()
+    
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -22,40 +42,29 @@ final class CategoryCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Setup
     private func setupUI() {
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 16
         contentView.addSubview(imageView)
+        contentView.addSubview(titleLabel)
+        
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-        
-        titleLabel.textColor = .white
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        titleLabel.numberOfLines = 1
-        titleLabel.layer.shadowColor = UIColor.black.cgColor
-        titleLabel.layer.shadowOpacity = 0.6
-        titleLabel.layer.shadowRadius = 2
-        titleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
-        contentView.addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
+        imageView.image = nil
+        titleLabel.text = nil
     }
     
     func configure(title: String, cover: String) {

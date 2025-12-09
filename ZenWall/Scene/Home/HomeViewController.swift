@@ -9,17 +9,6 @@ import UIKit
 
 final class HomeViewController: BaseViewController {
     
-    private let viewModel: HomeViewModel
-    
-    init(viewModel: HomeViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
         let layout = HomeViewController.createLayout()
@@ -39,6 +28,17 @@ final class HomeViewController: BaseViewController {
         rc.tintColor = .white
         return rc
     }()
+    
+    private let viewModel: HomeViewModel
+    
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {

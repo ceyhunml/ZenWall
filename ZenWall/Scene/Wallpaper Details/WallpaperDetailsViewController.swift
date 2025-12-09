@@ -8,21 +8,7 @@
 import UIKit
 
 final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelegate {
-    
-    // MARK: - Properties
-    private let viewModel: WallpaperDetailsViewModel
-    private var isFullScreen = false
-    
-    // MARK: - Init
-    init(viewModel: WallpaperDetailsViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     // MARK: - UI Elements
     private lazy var backgroundImageView: UIImageView = {
         let iv = UIImageView()
@@ -115,6 +101,21 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     private var scrollLeadingConstraint: NSLayoutConstraint!
     private var scrollTrailingConstraint: NSLayoutConstraint!
     private var scrollHeightConstraint: NSLayoutConstraint!
+    
+    
+    // MARK: - Properties
+    private let viewModel: WallpaperDetailsViewModel
+    private var isFullScreen = false
+    
+    // MARK: - Init
+    init(viewModel: WallpaperDetailsViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -298,7 +299,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     }
     
     // MARK: - Photo Download
-    func saveImage(quality: DownloadQuality) {
+    private func saveImage(quality: DownloadQuality) {
         guard let url = (quality == .full ? viewModel.imageURL?.full : viewModel.imageURL?.regular)
         else { return }
         

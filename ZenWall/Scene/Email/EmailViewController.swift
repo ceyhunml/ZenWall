@@ -8,21 +8,8 @@
 import UIKit
 
 class EmailViewController: BaseViewController {
-    
-    let builder = UserBuilder()
-    let viewModel: EmailViewModel
-    
-    init(viewModel: EmailViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     // MARK: - UI Elements
-    
     private lazy var emailTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "What's your email?"
@@ -73,6 +60,18 @@ class EmailViewController: BaseViewController {
         return btn
     }()
     
+    let builder = UserBuilder()
+    let viewModel: EmailViewModel
+    
+    init(viewModel: EmailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,18 +82,6 @@ class EmailViewController: BaseViewController {
     }
     
     // MARK: - Setup UI
-//    private func setupGradientBackground() {
-//        let gradient = CAGradientLayer()
-//        gradient.colors = [
-//            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-//            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-//        ]
-//        gradient.locations = [0.0, 1.0]
-//        gradient.frame = view.bounds
-//        
-//        view.layer.insertSublayer(gradient, at: 0)
-//    }
-    
     private func setupConstraints() {
         title = "Step 1 of 3"
         [emailTitleLabel, subtitleLabel,

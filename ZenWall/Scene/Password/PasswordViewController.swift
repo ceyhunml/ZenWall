@@ -9,21 +9,7 @@ import UIKit
 
 class PasswordViewController: BaseViewController {
     
-    let viewModel: PasswordViewModel
-    let builder: UserBuilder
-    
-    init(viewModel: PasswordViewModel, builder: UserBuilder) {
-        self.viewModel = viewModel
-        self.builder = builder
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     // MARK: - UI Elements
-    
     private lazy var passwordTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "Create your password"
@@ -74,6 +60,19 @@ class PasswordViewController: BaseViewController {
         return btn
     }()
     
+    let viewModel: PasswordViewModel
+    let builder: UserBuilder
+    
+    init(viewModel: PasswordViewModel, builder: UserBuilder) {
+        self.viewModel = viewModel
+        self.builder = builder
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,18 +83,6 @@ class PasswordViewController: BaseViewController {
     }
     
     // MARK: - Setup UI
-    //    private func setupGradientBackground() {
-    //        let gradient = CAGradientLayer()
-    //        gradient.colors = [
-    //            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-    //            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-    //        ]
-    //        gradient.locations = [0.0, 1.0]
-    //        gradient.frame = view.bounds
-    //
-    //        view.layer.insertSublayer(gradient, at: 0)
-    //    }
-    
     private func setupConstraints() {
         title = "Step 3 of 3"
         [passwordTitleLabel, subtitleLabel,

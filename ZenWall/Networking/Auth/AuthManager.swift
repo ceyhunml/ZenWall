@@ -7,6 +7,8 @@
 
 import Foundation
 import FirebaseAuth
+import GoogleSignIn
+import FirebaseCore
 
 class AuthManager {
     
@@ -57,6 +59,55 @@ class AuthManager {
             } else {
                 result?.user.delete { _ in }
                 completion(false, nil)
+            }
+        }
+    }
+    
+    func signInWithGoogle(presentingVC: UIViewController,
+                          completion: @escaping (String?, String?) -> Void) {
+        
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            completion(nil, "Missing Google Client ID")
+            return
+        }
+        
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { result, error in
+            
+            if let error = error {
+                completion(nil, error.localizedDescription)
+                return
+            }
+            
+            guard let idToken = result?.user.idToken else {
+                completion(nil, "No Google ID Token")
+                return
+            }
+            
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken.tokenString,
+                accessToken: result?.user.accessToken.tokenString ?? ""
+            )
+            
+            Auth.auth().signIn(with: credential) { authResult, error in
+                if let error = error {
+                    completion(nil, error.localizedDescription)
+                    return
+                }
+                
+                completion(authResult?.user.uid, nil)
+            }
+        }
+    }
+    
+    func resetPassword(email: String, completion: @escaping (String?) -> Void) {
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                completion(error.localizedDescription)
+            } else {
+                completion(nil)
             }
         }
     }

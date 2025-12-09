@@ -10,21 +10,7 @@ import UIKit
 
 class FullnameViewController: BaseViewController {
     
-    let viewModel: FullnameViewModel
-    let builder: UserBuilder
-    
-    init(viewModel: FullnameViewModel, builder: UserBuilder) {
-        self.viewModel = viewModel
-        self.builder = builder
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     // MARK: - UI Elements
-    
     private lazy var nameTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "What's your name?"
@@ -74,6 +60,19 @@ class FullnameViewController: BaseViewController {
         return btn
     }()
     
+    let viewModel: FullnameViewModel
+    let builder: UserBuilder
+    
+    init(viewModel: FullnameViewModel, builder: UserBuilder) {
+        self.viewModel = viewModel
+        self.builder = builder
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,18 +83,6 @@ class FullnameViewController: BaseViewController {
     }
     
     // MARK: - Setup UI
-//    private func setupGradientBackground() {
-//        let gradient = CAGradientLayer()
-//        gradient.colors = [
-//            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-//            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-//        ]
-//        gradient.locations = [0.0, 1.0]
-//        gradient.frame = view.bounds
-//        
-//        view.layer.insertSublayer(gradient, at: 0)
-//    }
-    
     private func setupConstraints() {
         title = "Step 2 of 3"
         [nameTitleLabel, subtitleLabel,

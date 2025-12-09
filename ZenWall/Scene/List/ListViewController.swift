@@ -9,17 +9,6 @@ import UIKit
 
 class ListViewController: BaseViewController {
     
-    private let viewModel: ListViewModel
-    
-    init(viewModel: ListViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private lazy var collectionView: UICollectionView = {
         let layout = ListViewController.createLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -37,6 +26,17 @@ class ListViewController: BaseViewController {
         let rc = UIRefreshControl()
         return rc
     }()
+    
+    private let viewModel: ListViewModel
+    
+    init(viewModel: ListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
