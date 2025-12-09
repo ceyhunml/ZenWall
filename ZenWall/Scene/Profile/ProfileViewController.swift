@@ -100,7 +100,7 @@ class ProfileViewController: BaseViewController {
         nameLabel.text = viewModel.username
         
         if viewModel.avatarURL.isEmpty {
-            avatarImageView.image = UIImage(named: "placeholder-avatar")
+            avatarImageView.image = UIImage(named: "placeholderAvatar")
         } else {
             avatarImageView.setUnsplashImage(viewModel.avatarURL)
         }
@@ -114,10 +114,10 @@ class ProfileViewController: BaseViewController {
         view.addSubview(listContainer)
         
         [
-            makeRow(icon: "help_outline", title: "Help & Support"),
-            makeRow(icon: "thumb_up", title: "Rate ZenWall"),
+            makeRow(icon: "questionmark.circle", title: "Help & Support"),
+            makeRow(icon: "hand.thumbsup", title: "Rate ZenWall"),
             makeRow(icon: "lock", title: "Privacy Policy"),
-            makeRow(icon: "logout", title: "Sign Out", isDestructive: true, action: #selector(signOutTapped))
+            makeRow(icon: "arrow.backward.square", title: "Sign Out", isDestructive: true, action: #selector(signOutTapped))
         ].forEach { listContainer.addArrangedSubview($0) }
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
