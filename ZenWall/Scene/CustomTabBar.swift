@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 final class CustomTabBar: UITabBarController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBarAppearance()
