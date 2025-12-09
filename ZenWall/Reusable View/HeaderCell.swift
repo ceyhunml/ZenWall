@@ -10,9 +10,6 @@ import UIKit
 
 final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
     
-    // MARK: - Callback
-    var onSearch: ((String) -> Void)?
-    
     // MARK: - UI
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -23,8 +20,6 @@ final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
         return label
     }()
     
-    private let searchBar = CustomSearchBar()
-    
     private lazy var searchTapButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
@@ -34,6 +29,9 @@ final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
         btn.addTarget(self, action: #selector(searchTapped), for: .touchUpInside)
         return btn
     }()
+    
+    private let searchBar = CustomSearchBar()
+    var onSearch: ((String) -> Void)?
     
     // MARK: - Init
     override init(frame: CGRect) {
@@ -93,5 +91,11 @@ final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
     
     func resetSearch() {
         searchBar.textField.text = ""
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        onSearch?(textField.text ?? "")
+        textField.resignFirstResponder()
+        return true
     }
 }
