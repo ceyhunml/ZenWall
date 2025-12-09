@@ -18,11 +18,14 @@ final class NetworkManager {
         model: T.Type,
         method: HTTPMethod = .get,
         parameters: Parameters? = nil,
+        encoding: ParameterEncoding = URLEncoding.default,
         completion: @escaping (T?, String?) -> Void
     ) {
+
         AF.request(url,
                    method: method,
                    parameters: parameters,
+                   encoding: encoding,
                    headers: NetworkingHelper.shared.headers)
         .responseDecodable(of: T.self) { response in
             switch response.result {

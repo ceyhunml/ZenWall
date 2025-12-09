@@ -7,10 +7,17 @@
 
 import UIKit
 
-final class CategoriesViewController: UIViewController {
+final class CategoriesViewController: BaseViewController {
     
-    private var collectionView: UICollectionView!
-    private let viewModel: CategoriesViewModel
+    // MARK: - UI
+    private lazy var collectionView: UICollectionView = {
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: Self.createLayout())
+        cv.backgroundColor = .clear
+        cv.dataSource = self
+        cv.delegate = self
+        cv.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
+        return cv
+    }()
     
     // MARK: - Init
     init(viewModel: CategoriesViewModel) {
@@ -21,47 +28,25 @@ final class CategoriesViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    private let viewModel: CategoriesViewModel
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        setupUI()
         setupNavigationBar()
-        setupCollectionView()
         bindViewModel()
         viewModel.fetchNewCategories()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        setupNavigationBar()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        setupNavigationBar()
-    }
-    
-    private func bindViewModel() {
-        viewModel.success = { [weak self] in
-            self?.collectionView.reloadData()
-        }
-        
-        viewModel.failure = { errorMsg in
-            print("ERROR: \(errorMsg)")
-        }
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setupNavigationBar()
     }
     
-    // MARK: - CollectionView + Gradient
-    private func setupCollectionView() {
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: Self.createLayout())
-        collectionView.backgroundColor = .clear
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
-        
+    // MARK: - UI Setup
+    private func setupUI() {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -71,44 +56,23 @@ final class CategoriesViewController: UIViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradientLayer.locations = [0.0, 1.0]
-        gradientLayer.frame = UIScreen.main.bounds
-        
-        let gradientView = UIView(frame: UIScreen.main.bounds)
-        gradientView.layer.addSublayer(gradientLayer)
-        collectionView.backgroundView = gradientView
     }
     
-    // MARK: - Navigation Bar Style
+    // MARK: - NavigationBar
     private func setupNavigationBar() {
         title = "Categories"
         navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    // MARK: - Bindings
+    private func bindViewModel() {
+        viewModel.success = { [weak self] in
+            self?.collectionView.reloadData()
+        }
         
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1)
-        appearance.shadowColor = .clear
-        
-        appearance.largeTitleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.systemFont(ofSize: 34, weight: .bold)
-        ]
-        
-        appearance.titleTextAttributes = [
-            .foregroundColor: UIColor.white,
-            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
-        ]
-        
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.compactAppearance = appearance
-        navigationController?.navigationBar.tintColor = .white
+        viewModel.failure = { errorMsg in
+            print("ERROR: \(errorMsg)")
+        }
     }
 }
 

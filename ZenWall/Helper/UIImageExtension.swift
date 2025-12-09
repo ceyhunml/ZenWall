@@ -9,12 +9,20 @@ import UIKit
 import Kingfisher
 import Photos
 
+enum ImageSaveResult {
+    case success
+    case denied
+    case invalidURL
+    case downloadFailed
+    case saveFailed
+}
+
 extension UIImage {
     static func downloadAndSave(from urlString: String,
-                                completion: @escaping (Bool) -> Void) {
+                                completion: @escaping (ImageSaveResult) -> Void) {
         
         guard let url = URL(string: urlString) else {
-            completion(false)
+            completion(.invalidURL)
             return
         }
         
@@ -25,17 +33,18 @@ extension UIImage {
                 let image = value.image
                 
                 PHPhotoLibrary.requestAuthorization { status in
+                    
                     guard status == .authorized else {
-                        completion(false)
+                        completion(.denied)
                         return
                     }
                     
                     UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                    completion(true)
+                    completion(.success)
                 }
                 
             case .failure(_):
-                completion(false)
+                completion(.downloadFailed)
             }
         }
     }

@@ -7,18 +7,7 @@
 
 import UIKit
 
-class ListViewController: UIViewController {
-    
-    private let viewModel: ListViewModel
-    
-    init(viewModel: ListViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+class ListViewController: BaseViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = ListViewController.createLayout()
@@ -38,27 +27,24 @@ class ListViewController: UIViewController {
         return rc
     }()
     
+    private let viewModel: ListViewModel
+    
+    init(viewModel: ListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.largeTitleDisplayMode = .never
+        setupDefaultBar()
         setupCollectionView()
-        setupGradientBackground()
         bindViewModel()
         viewModel.fetchImages()
-    }
-    
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        let bgView = UIView(frame: view.bounds)
-        bgView.layer.addSublayer(gradient)
-        collectionView.backgroundView = bgView
     }
     
     private func setupCollectionView() {

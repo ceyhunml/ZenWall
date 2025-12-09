@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class LoginViewModel {
     
@@ -23,5 +24,14 @@ class LoginViewModel {
                 completion(nil, error)
             }
         }
+    }
+    
+    func signInWithGoogle(from vc: UIViewController,
+                          completion: @escaping (String?, String?) -> Void) {
+        manager.signInWithGoogle(presentingVC: vc, completion: completion)
+    }
+    
+    func resetPassword(email: String, completion: @escaping (String?) -> Void) {
+        manager.resetPassword(email: email, completion: completion)
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-final class HeaderCell: UICollectionViewCell {
+final class HeaderCell: UICollectionViewCell, UITextFieldDelegate {
     
     // MARK: - Callback
     var onSearch: ((String) -> Void)?
@@ -27,7 +27,7 @@ final class HeaderCell: UICollectionViewCell {
     
     private lazy var searchTapButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "arrow.right.circle.fill"), for: .normal)
+        btn.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         btn.tintColor = UIColor(white: 1.0, alpha: 0.85)
         btn.contentVerticalAlignment = .fill
         btn.contentHorizontalAlignment = .fill
@@ -90,12 +90,8 @@ final class HeaderCell: UICollectionViewCell {
         onSearch?(searchBar.text)
         endEditing(true)
     }
-}
-
-extension HeaderCell: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        onSearch?(searchBar.text)
-        textField.resignFirstResponder()
-        return true
+    
+    func resetSearch() {
+        searchBar.textField.text = ""
     }
 }

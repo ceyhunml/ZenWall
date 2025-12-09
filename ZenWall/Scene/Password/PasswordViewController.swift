@@ -7,23 +7,9 @@
 
 import UIKit
 
-class PasswordViewController: UIViewController {
-    
-    let viewModel: PasswordViewModel
-    let builder: UserBuilder
-    
-    init(viewModel: PasswordViewModel, builder: UserBuilder) {
-        self.viewModel = viewModel
-        self.builder = builder
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+class PasswordViewController: BaseViewController {
     
     // MARK: - UI Elements
-    
     private lazy var passwordTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "Create your password"
@@ -74,29 +60,29 @@ class PasswordViewController: UIViewController {
         return btn
     }()
     
+    let viewModel: PasswordViewModel
+    let builder: UserBuilder
+    
+    init(viewModel: PasswordViewModel, builder: UserBuilder) {
+        self.viewModel = viewModel
+        self.builder = builder
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""
         navigationController?.navigationBar.tintColor = .white
         setupConstraints()
-        setupGradientBackground()
         hideKeyboardWhenTappedAround()
     }
     
     // MARK: - Setup UI
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        view.layer.insertSublayer(gradient, at: 0)
-    }
-    
     private func setupConstraints() {
         title = "Step 3 of 3"
         [passwordTitleLabel, subtitleLabel,
@@ -144,7 +130,12 @@ class PasswordViewController: UIViewController {
         
         builder.setPassword(password: password)
         
-        builder.build { [weak self] success, error, email, password in
+        guard let data = builder.build() else {
+            alertFor(title: "Error", message: "Missing fields.")
+            return
+        }
+        
+        viewModel.registerUser(with: data) { [weak self] success, error, email, password in
             guard let self else { return }
             
             if let error {
@@ -159,14 +150,12 @@ class PasswordViewController: UIViewController {
             )
             
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-
+                
                 self.navigationController?.popToRootViewController(animated: true)
-
+                
                 if let loginVC = self.navigationController?.viewControllers.first as? LoginViewController {
-
                     loginVC.viewModel.prefillEmail = email
                     loginVC.viewModel.prefillPassword = password
-
                     loginVC.viewWillAppear(true)
                 }
             }))

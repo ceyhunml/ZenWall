@@ -7,13 +7,10 @@
 
 import UIKit
 
-final class LoginViewController: UIViewController {
-    
-    let viewModel = LoginViewModel()
-    let builder = UserBuilder()
+final class LoginViewController: BaseViewController {
     
     // MARK: - Title
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "ZenWall"
         label.textColor = .white
@@ -23,7 +20,7 @@ final class LoginViewController: UIViewController {
     }()
     
     // MARK: - Email Field
-    private let emailLabel: UILabel = {
+    private lazy var emailLabel: UILabel = {
         let label = UILabel()
         label.text = "Email"
         label.textColor = .white
@@ -31,7 +28,7 @@ final class LoginViewController: UIViewController {
         return label
     }()
     
-    private let emailField: UITextField = {
+    private lazy var emailField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Enter your email"
         tf.backgroundColor = UIColor(red: 0.14, green: 0.28, blue: 0.19, alpha: 1)
@@ -43,7 +40,7 @@ final class LoginViewController: UIViewController {
     }()
     
     // MARK: - Password
-    private let passwordLabel: UILabel = {
+    private lazy var passwordLabel: UILabel = {
         let label = UILabel()
         label.text = "Password"
         label.textColor = .white
@@ -51,7 +48,7 @@ final class LoginViewController: UIViewController {
         return label
     }()
     
-    private let passwordField: UITextField = {
+    private lazy var passwordField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Enter your password"
         tf.isSecureTextEntry = true
@@ -64,7 +61,7 @@ final class LoginViewController: UIViewController {
     }()
     
     // MARK: - Login Button
-    private let loginButton: UIButton = {
+    private lazy var loginButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Login", for: .normal)
         btn.backgroundColor = UIColor(red: 0.07, green: 0.83, blue: 0.32, alpha: 1)
@@ -75,7 +72,7 @@ final class LoginViewController: UIViewController {
     }()
     
     // MARK: Divider
-    private let dividerLabel: UILabel = {
+    private lazy var dividerLabel: UILabel = {
         let label = UILabel()
         label.text = "Or continue with"
         label.textColor = UIColor(red: 0.57, green: 0.79, blue: 0.64, alpha: 1)
@@ -85,7 +82,7 @@ final class LoginViewController: UIViewController {
     }()
     
     // MARK: - Google Button (Custom)
-    private let googleButton: UIButton = {
+    private lazy var googleButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.layer.cornerRadius = 14
         btn.layer.borderWidth = 1
@@ -118,30 +115,17 @@ final class LoginViewController: UIViewController {
         return btn
     }()
     
-    private func setupGradientBackground() {
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.06, green: 0.09, blue: 0.08, alpha: 1).cgColor,
-            UIColor(red: 0.09, green: 0.12, blue: 0.10, alpha: 1).cgColor
-        ]
-        gradient.locations = [0.0, 1.0]
-        gradient.frame = view.bounds
-        
-        view.layer.insertSublayer(gradient, at: 0)
-    }
-    
     // MARK: - Forgot Password
-    private let forgotPasswordLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Forgot Password?"
-        label.textColor = UIColor(red: 0.57, green: 0.79, blue: 0.64, alpha: 1)
-        label.font = .systemFont(ofSize: 14)
-        label.textAlignment = .center
-        return label
+    private lazy var forgotPasswordButton: UIButton = {
+        let btn = UIButton(type: .system)
+        btn.setTitle("Forgot Password?", for: .normal)
+        btn.setTitleColor(UIColor(red: 0.57, green: 0.79, blue: 0.64, alpha: 1), for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 14)
+        return btn
     }()
     
     // MARK: - Footer
-    private let footerLabel: UILabel = {
+    private lazy var footerLabel: UILabel = {
         let label = UILabel()
         label.text = "Don't have an account?"
         label.textColor = UIColor(red: 0.57, green: 0.79, blue: 0.64, alpha: 0.8)
@@ -149,13 +133,16 @@ final class LoginViewController: UIViewController {
         return label
     }()
     
-    private let signupButton: UIButton = {
+    private lazy var signupButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Sign Up", for: .normal)
         btn.setTitleColor(UIColor(red: 0.07, green: 0.83, blue: 0.32, alpha: 1), for: .normal)
         btn.titleLabel?.font = .boldSystemFont(ofSize: 14)
         return btn
     }()
+    
+    let viewModel = LoginViewModel()
+    let builder = UserBuilder()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -168,11 +155,11 @@ final class LoginViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         if let email = viewModel.prefillEmail {
             emailField.text = email
         }
-
+        
         if let password = viewModel.prefillPassword {
             passwordField.text = password
         }
@@ -188,7 +175,7 @@ final class LoginViewController: UIViewController {
             loginButton,
             dividerLabel,
             googleButton,
-            forgotPasswordLabel,
+            forgotPasswordButton,
             footerLabel, signupButton
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -196,6 +183,8 @@ final class LoginViewController: UIViewController {
         }
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         signupButton.addTarget(self, action: #selector(signup), for: .touchUpInside)
+        googleButton.addTarget(self, action: #selector(googleTapped), for: .touchUpInside)
+        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             
@@ -231,10 +220,10 @@ final class LoginViewController: UIViewController {
             googleButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             googleButton.heightAnchor.constraint(equalToConstant: 54),
             
-            forgotPasswordLabel.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 26),
-            forgotPasswordLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            forgotPasswordButton.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 26),
+            forgotPasswordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            footerLabel.topAnchor.constraint(equalTo: forgotPasswordLabel.bottomAnchor, constant: 50),
+            footerLabel.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 50),
             footerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -35),
             
             signupButton.centerYAnchor.constraint(equalTo: footerLabel.centerYAnchor),
@@ -249,12 +238,54 @@ final class LoginViewController: UIViewController {
         viewModel.signIn(email: email, password: password) { [weak self] success, error in
             guard let self else { return }
             if success != nil {
+                UserSessionManager.shared.isLoggedIn = true
+                
                 if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-                    sceneDelegate.window?.rootViewController = CustomTabBar()
-                    sceneDelegate.window?.makeKeyAndVisible()
+                    if let window = sceneDelegate.window {
+                        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+                            window.rootViewController = CustomTabBar()
+                        }, completion: nil)
+                    }
                 }
             } else if let error {
                 self.alertFor(title: "Oops!", message: error)
+            }
+        }
+    }
+    
+    @objc private func googleTapped() {
+        viewModel.signInWithGoogle(from: self) { [weak self] userId, error in
+            guard let self else { return }
+            
+            if let userId {
+                UserDefaults.standard.set(userId, forKey: "userId")
+                UserSessionManager.shared.isLoggedIn = true
+                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                    if let window = sceneDelegate.window {
+                        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+                            window.rootViewController = CustomTabBar()
+                        }, completion: nil)
+                    }
+                }
+            } else {
+                self.alertFor(title: "Google Sign-In Failed", message: error ?? "Unknown error")
+            }
+        }
+    }
+    
+    @objc private func forgotPasswordTapped() {
+        guard let email = emailField.text, !email.isEmpty else {
+            self.alertFor(title: "Oops!", message: "Please enter your email first.")
+            return
+        }
+        
+        viewModel.resetPassword(email: email) { [weak self] error in
+            guard let self else { return }
+            
+            if let error {
+                self.alertFor(title: "Error", message: error)
+            } else {
+                self.alertFor(title: "Email Sent", message: "We’ve sent you a password reset link.")
             }
         }
     }

@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 import Photos
 
-// MARK: - UIImageView (Şəkli göstərmək)
+// MARK: - UIImageView
 extension UIImageView {
     func setUnsplashImage(_ urlString: String?,
                           placeholder: UIImage? = nil) {
@@ -19,6 +19,8 @@ extension UIImageView {
             self.image = placeholder
             return
         }
+        
+        self.kf.indicatorType = .activity
         
         self.kf.setImage(
             with: url,
