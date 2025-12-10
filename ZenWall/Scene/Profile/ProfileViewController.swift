@@ -50,8 +50,9 @@ class ProfileViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.loadUser()
         layoutUI()
-        fillData()
+        bindViewModel()
     }
     
     private func makeRow(icon: String, title: String, isDestructive: Bool = false, action: Selector? = nil) -> UIView {
@@ -96,13 +97,13 @@ class ProfileViewController: BaseViewController {
     }
     
     // MARK: - Fill UI
-    private func fillData() {
-        nameLabel.text = viewModel.username
+    private func bindViewModel() {
+        viewModel.onDataLoaded = { [weak self] name, _ in
+            self?.nameLabel.text = name
+        }
         
-        if viewModel.avatarURL.isEmpty {
-            avatarImageView.image = UIImage(named: "placeholderAvatar")
-        } else {
-            avatarImageView.setUnsplashImage(viewModel.avatarURL)
+        viewModel.onError = { [weak self] err in
+            self?.alertFor(title: "Error", message: err)
         }
     }
     

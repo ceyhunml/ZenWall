@@ -118,50 +118,41 @@ class PasswordViewController: BaseViewController {
     // MARK: - Actions
     
     @objc private func nextAction() {
+
         guard let password = passwordField.text, !password.isEmpty else {
             alertFor(title: "Oops!", message: "Please enter your password.")
             return
         }
-        
+
         guard password.count >= 6 else {
             alertFor(title: "Invalid Password", message: "Password must be at least 6 characters.")
             return
         }
-        
+
         builder.setPassword(password: password)
-        
+
         guard let data = builder.build() else {
             alertFor(title: "Error", message: "Missing fields.")
             return
         }
-        
+
         viewModel.registerUser(with: data) { [weak self] success, error, email, password in
             guard let self else { return }
-            
+
             if let error {
                 self.alertFor(title: "Error", message: error)
                 return
             }
-            
-            let alert = UIAlertController(
-                title: "Done!",
-                message: "Your account has been created successfully!",
-                preferredStyle: .alert
-            )
-            
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-                
-                self.navigationController?.popToRootViewController(animated: true)
-                
-                if let loginVC = self.navigationController?.viewControllers.first as? LoginViewController {
-                    loginVC.viewModel.prefillEmail = email
-                    loginVC.viewModel.prefillPassword = password
-                    loginVC.viewWillAppear(true)
+
+            UserSessionManager.shared.isLoggedIn = true
+
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let delegate = scene.delegate as? SceneDelegate,
+               let window = delegate.window {
+
+                UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight) {
+                    window.rootViewController = CustomTabBar()
                 }
-            }))
-            
-            DispatchQueue.main.async {
-                self.present(alert, animated: true)
             }
         }
     }

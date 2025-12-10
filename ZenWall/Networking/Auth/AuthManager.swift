@@ -20,10 +20,9 @@ final class AuthManager {
         backend.signIn(email: email, password: password, completion: completion)
     }
     
-    func signUp(email: String, password: String,
-                completion: @escaping ((String?) -> Void)) {
-        
-        backend.signUp(email: email, password: password, completion: completion)
+    func signUp(email: String, password: String, fullname: String,
+                completion: @escaping (String?, String?) -> Void) {
+        backend.signUp(email: email, password: password, fullname: fullname, completion: completion)
     }
     
     func resetPassword(email: String,
@@ -36,5 +35,10 @@ final class AuthManager {
                           completion: @escaping (Bool, String?) -> Void) {
         
         backend.checkEmailExists(email: email, completion: completion)
+    }
+    
+    func getUserData(uid: String,
+                     completion: @escaping ([String: Any]?, String?) -> Void) {
+        backend.fetchUserData(uid: uid, completion: completion)
     }
 }

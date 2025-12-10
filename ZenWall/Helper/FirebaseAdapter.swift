@@ -17,6 +17,8 @@ final class FirebaseAdapter: BackendService {
     static let shared = FirebaseAdapter()
     
     var auth = FirebaseAuth.Auth.auth()
+    private let firestore = Firestore.firestore()
+    private let usersCollection = Firestore.firestore().collection("users")
     
     private init() {}
     
@@ -40,10 +42,31 @@ final class FirebaseAdapter: BackendService {
     
     // MARK: - Email Register
     func signUp(email: String, password: String,
-                completion: @escaping ((String?) -> Void)) {
+                fullname: String,
+                completion: @escaping (String?, String?) -> Void) {
         
-        Auth.auth().createUser(withEmail: email, password: password) { _, error in
-            completion(error?.localizedDescription)
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            
+            if let error = error {
+                completion(nil, error.localizedDescription)
+                return
+            }
+            
+            guard let userId = result?.user.uid else {
+                completion(nil, "User ID not found")
+                return
+            }
+            UserSessionManager.shared.userId = userId
+            
+            self.saveUserData(userId: userId,
+                              fullname: fullname,
+                              email: email) { saveError in
+                if let saveError {
+                    completion(nil, saveError)
+                } else {
+                    completion(userId, nil)
+                }
+            }
         }
     }
     
@@ -69,26 +92,36 @@ final class FirebaseAdapter: BackendService {
         GIDSignIn.sharedInstance.configuration = config
         
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { result, error in
-            if let error = error {
-                completion(nil, error.localizedDescription)
-                return
-            }
             
-            guard let idToken = result?.user.idToken else {
-                completion(nil, "No ID token")
+            if let error { completion(nil, error.localizedDescription); return }
+            
+            guard let googleUser = result?.user else {
+                completion(nil, "No Google User")
                 return
             }
             
             let credential = GoogleAuthProvider.credential(
-                withIDToken: idToken.tokenString,
-                accessToken: result?.user.accessToken.tokenString ?? ""
+                withIDToken: googleUser.idToken?.tokenString ?? "",
+                accessToken: googleUser.accessToken.tokenString
             )
             
             Auth.auth().signIn(with: credential) { authResult, error in
-                if let error = error {
-                    completion(nil, error.localizedDescription)
-                } else {
-                    completion(authResult?.user.uid, nil)
+                
+                if let error { completion(nil, error.localizedDescription); return }
+                
+                guard let userId = authResult?.user.uid else {
+                    completion(nil, "Missing Firebase User ID")
+                    return
+                }
+                
+                let fullname = googleUser.profile?.name
+                let email = googleUser.profile?.email
+                
+                self.saveUserData(userId: userId,
+                                  fullname: fullname,
+                                  email: email) { saveError in
+                    if let saveError { completion(nil, saveError) }
+                    else { completion(userId, nil) }
                 }
             }
         }
@@ -118,6 +151,40 @@ final class FirebaseAdapter: BackendService {
                 result?.user.delete { _ in }
                 completion(false, nil)
             }
+        }
+    }
+    
+    //MARK: - Save User
+    func saveUserData(userId: String, fullname: String?, email: String?, completion: @escaping (String?) -> Void) {
+        
+        let data: [String: Any] = [
+            "fullname": fullname ?? "",
+            "email": email ?? "",
+            "createdAt": FieldValue.serverTimestamp()
+        ]
+        
+        UserSessionManager.shared.isLoggedIn = true
+        
+        usersCollection.document(userId).setData(data, merge: true) { error in
+            if let error {
+                completion(error.localizedDescription)
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    func fetchUserData(uid: String,
+                       completion: @escaping ([String: Any]?, String?) -> Void) {
+        
+        firestore.collection("users").document(uid).getDocument { snapshot, error in
+            
+            if let error {
+                completion(nil, error.localizedDescription)
+                return
+            }
+            
+            completion(snapshot?.data(), nil)
         }
     }
 }

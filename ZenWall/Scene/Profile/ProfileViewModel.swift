@@ -10,12 +10,34 @@ import Foundation
 class ProfileViewModel {
     
     // MARK: - Outputs
-    var username: String = "Aria"
-    var avatarURL: String = ""
+    var onDataLoaded: ((String, String) -> Void)?
+    var onError: ((String) -> Void)?
     
     // MARK: - Sign Out
     func signOut() {
-        UserDefaults.standard.removeObject(forKey: "userId")
-        UserSessionManager.shared.logout()
+        UserSessionManager.shared.clearSession()
+    }
+    
+    func loadUser() {
+        guard let uid = UserDefaults.standard.string(forKey: "userId") else {
+            onError?("User not logged in")
+            return
+        }
+        
+        AuthManager.shared.getUserData(uid: uid) { data, error in
+            
+            if let error = error {
+                self.onError?(error)
+                return
+            }
+            
+            guard let data,
+                  let fullname = data["fullname"] as? String,
+                  let email = data["email"] as? String else {
+                self.onError?("Invalid data")
+                return
+            }
+            self.onDataLoaded?(fullname, email)
+        }
     }
 }
