@@ -5,11 +5,21 @@
 //  Created by Ceyhun Məmmədli on 03.12.25.
 //
 
-import Foundation
-import FirebaseAuth
-import FirebaseFirestore
+import UIKit
 
 protocol BackendService {
-    var auth: Auth { get }
-    var firestore: Firestore { get }
+    func signIn(email: String, password: String,
+                completion: @escaping (String?, String?) -> Void)
+
+    func signUp(email: String, password: String,
+                completion: @escaping (String?) -> Void)
+
+    func resetPassword(email: String,
+                       completion: @escaping (String?) -> Void)
+
+    func signInWithGoogle(presentingVC: UIViewController,
+                          completion: @escaping (String?, String?) -> Void)
+    
+    func checkEmailExists(email: String,
+                          completion: @escaping (Bool, String?) -> Void)
 }
