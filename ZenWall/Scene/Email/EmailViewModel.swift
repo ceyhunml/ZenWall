@@ -22,7 +22,7 @@ class EmailViewModel {
     var onEmailCheck: ((Bool, String?) -> Void)?
     
     func checkEmail(_ email: String) {
-        manager.checkEmailExists(email) { exists, error in
+        manager.checkEmailExists(email: email) { exists, error in
             self.onEmailCheck?(exists, error)
         }
     }

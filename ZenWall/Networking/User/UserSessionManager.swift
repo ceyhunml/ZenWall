@@ -12,14 +12,18 @@ final class UserSessionManager {
     static let shared = UserSessionManager()
     private init() {}
     
-    private let key = "isLoggedIn"
-    
     var isLoggedIn: Bool {
-        get { UserDefaults.standard.bool(forKey: key) }
-        set { UserDefaults.standard.set(newValue, forKey: key) }
+        get { UserDefaults.standard.bool(forKey: "isLoggedIn") }
+        set { UserDefaults.standard.set(newValue, forKey: "isLoggedIn") }
     }
     
-    func logout() {
-        isLoggedIn = false
+    var userId: String? {
+        get { UserDefaults.standard.string(forKey: "userId") }
+        set { UserDefaults.standard.set(newValue, forKey: "userId") }
+    }
+    
+    func clearSession() {
+        UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+        UserDefaults.standard.removeObject(forKey: "userId")
     }
 }

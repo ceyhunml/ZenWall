@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6109AF712EE7F65D00E25DE0 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 6109AF702EE7F65D00E25DE0 /* GoogleSignIn */; };
+		6109AFFC2EE95F5700E25DE0 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 6109AFFB2EE95F5700E25DE0 /* FirebaseStorage */; };
 		6173AEA92EBF2C3400C613A9 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 6173AEA82EBF2C3400C613A9 /* Alamofire */; };
 		6173AEAC2EBF2C4300C613A9 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 6173AEAB2EBF2C4300C613A9 /* Kingfisher */; };
 		61B66CCA2ED6F55400A30514 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 61B66CC92ED6F55400A30514 /* FirebaseAuth */; };
@@ -49,6 +50,7 @@
 				61B66CCA2ED6F55400A30514 /* FirebaseAuth in Frameworks */,
 				61B66CCC2ED6F55400A30514 /* FirebaseCore in Frameworks */,
 				61B66CCE2ED6F55400A30514 /* FirebaseFirestore in Frameworks */,
+				6109AFFC2EE95F5700E25DE0 /* FirebaseStorage in Frameworks */,
 				6173AEA92EBF2C3400C613A9 /* Alamofire in Frameworks */,
 				6109AF712EE7F65D00E25DE0 /* GoogleSignIn in Frameworks */,
 			);
@@ -99,6 +101,7 @@
 				61B66CCB2ED6F55400A30514 /* FirebaseCore */,
 				61B66CCD2ED6F55400A30514 /* FirebaseFirestore */,
 				6109AF702EE7F65D00E25DE0 /* GoogleSignIn */,
+				6109AFFB2EE95F5700E25DE0 /* FirebaseStorage */,
 			);
 			productName = ZenWall;
 			productReference = 6173AE032EBF232700C613A9 /* ZenWall.app */;
@@ -413,6 +416,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6109AF6F2EE7F65D00E25DE0 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		6109AFFB2EE95F5700E25DE0 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61B66CC82ED6F55400A30514 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		6173AEA82EBF2C3400C613A9 /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

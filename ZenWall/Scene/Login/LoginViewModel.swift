@@ -14,24 +14,28 @@ class LoginViewModel {
     
     var prefillEmail: String?
     var prefillPassword: String?
+    var successForSignIn: ((String) -> Void)?
+    var successForReset: (() -> Void)?
+    var failure: ((String) -> Void)?
     
-    func signIn(email: String, password: String, completion: @escaping (String?, String?) -> Void) {
+    func signIn(email: String, password: String) {
         manager.signIn(email: email, password: password) { userId, error  in
             if let userId {
                 UserDefaults.standard.set(userId, forKey: "userId")
-                completion(userId, nil)
+                self.successForSignIn?(userId)
             } else {
-                completion(nil, error)
+                self.failure?(error ?? "")
             }
         }
     }
     
-    func signInWithGoogle(from vc: UIViewController,
-                          completion: @escaping (String?, String?) -> Void) {
-        manager.signInWithGoogle(presentingVC: vc, completion: completion)
-    }
-    
-    func resetPassword(email: String, completion: @escaping (String?) -> Void) {
-        manager.resetPassword(email: email, completion: completion)
+    func resetPassword(email: String) {
+        manager.resetPassword(email: email) { error in
+            if let error {
+                self.failure?(error)
+            } else {
+                self.successForReset?()
+            }
+        }
     }
 }

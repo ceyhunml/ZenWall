@@ -24,7 +24,6 @@ final class CategoryCell: UICollectionViewCell {
         lbl.textColor = .white
         lbl.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         lbl.numberOfLines = 1
-        
         lbl.layer.shadowColor = UIColor.black.cgColor
         lbl.layer.shadowOpacity = 0.6
         lbl.layer.shadowRadius = 2

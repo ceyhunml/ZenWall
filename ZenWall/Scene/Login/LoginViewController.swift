@@ -147,10 +147,8 @@ final class LoginViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonTitle = ""
-        setupGradientBackground()
+        closureHandler()
         setupUI()
-        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -162,6 +160,26 @@ final class LoginViewController: BaseViewController {
         
         if let password = viewModel.prefillPassword {
             passwordField.text = password
+        }
+    }
+    
+    private func closureHandler() {
+        viewModel.successForReset = {
+            self.alertFor(title: "Email Sent!", message: "Check your Inbox!")
+        }
+        viewModel.successForSignIn = { userId in
+            UserDefaults.standard.set(userId, forKey: "userId")
+            UserSessionManager.shared.isLoggedIn = true
+            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                if let window = sceneDelegate.window {
+                    UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+                        window.rootViewController = CustomTabBar()
+                    }, completion: nil)
+                }
+            }
+        }
+        viewModel.failure = { error in
+            self.alertFor(title: "Error", message: error)
         }
     }
     
@@ -181,6 +199,7 @@ final class LoginViewController: BaseViewController {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
+        navigationItem.backButtonTitle = ""
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         signupButton.addTarget(self, action: #selector(signup), for: .touchUpInside)
         googleButton.addTarget(self, action: #selector(googleTapped), for: .touchUpInside)
@@ -234,27 +253,12 @@ final class LoginViewController: BaseViewController {
     @objc private func login() {
         guard let email = emailField.text,
               let password = passwordField.text else { return }
-        
-        viewModel.signIn(email: email, password: password) { [weak self] success, error in
-            guard let self else { return }
-            if success != nil {
-                UserSessionManager.shared.isLoggedIn = true
-                
-                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
-                    if let window = sceneDelegate.window {
-                        UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
-                            window.rootViewController = CustomTabBar()
-                        }, completion: nil)
-                    }
-                }
-            } else if let error {
-                self.alertFor(title: "Oops!", message: error)
-            }
-        }
+        viewModel.signIn(email: email, password: password)
     }
     
     @objc private func googleTapped() {
-        viewModel.signInWithGoogle(from: self) { [weak self] userId, error in
+        FirebaseAdapter.shared.signInWithGoogle(presentingVC: self) { [weak self] userId, error in
+            
             guard let self else { return }
             
             if let userId {
@@ -278,16 +282,7 @@ final class LoginViewController: BaseViewController {
             self.alertFor(title: "Oops!", message: "Please enter your email first.")
             return
         }
-        
-        viewModel.resetPassword(email: email) { [weak self] error in
-            guard let self else { return }
-            
-            if let error {
-                self.alertFor(title: "Error", message: error)
-            } else {
-                self.alertFor(title: "Email Sent", message: "We’ve sent you a password reset link.")
-            }
-        }
+        viewModel.resetPassword(email: email)
     }
     
     @objc private func signup() {

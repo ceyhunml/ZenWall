@@ -6,109 +6,55 @@
 //
 
 import Foundation
-import FirebaseAuth
-import GoogleSignIn
-import FirebaseCore
 
-class AuthManager {
+final class AuthManager {
     
     static let shared = AuthManager()
-    
     private init() {}
     
-    func signIn(email: String, password: String, completion: @escaping (String?, String?) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                completion(nil, error.localizedDescription)
-            } else if let user = result?.user {
-                print(user.uid)
-                completion(user.uid, nil)
-            }
-        }
+    private let backend: BackendService = FirebaseAdapter.shared
+    
+    func signIn(email: String, password: String,
+                completion: @escaping (String?, String?) -> Void) {
+        
+        backend.signIn(email: email, password: password, completion: completion)
     }
     
-    func signUp(email: String, password: String, completion: @escaping((String?) -> Void)) {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error = error {
-                completion(error.localizedDescription)
-            } else {
-                completion(nil)
-            }
-        }
+    func signUp(email: String, password: String, fullname: String,
+                completion: @escaping (String?, String?) -> Void) {
+        backend.signUp(email: email, password: password, fullname: fullname, completion: completion)
     }
     
-    func checkEmailExists(_ email: String, completion: @escaping (Bool, String?) -> Void) {
-        let tempPassword = "TEST1234"
+    func resetPassword(email: String,
+                       completion: @escaping (String?) -> Void) {
         
-        Auth.auth().createUser(withEmail: email, password: tempPassword) { result, error in
-            
-            if let error = error as NSError? {
-                
-                switch AuthErrorCode(rawValue: error.code) {
-                    
-                case .emailAlreadyInUse:
-                    completion(true, nil)
-                    
-                case .invalidEmail:
-                    completion(false, "Invalid email format.")
-                    
-                default:
-                    completion(false, error.localizedDescription)
-                }
-                
-            } else {
-                result?.user.delete { _ in }
-                completion(false, nil)
-            }
-        }
+        backend.resetPassword(email: email, completion: completion)
     }
     
-    func signInWithGoogle(presentingVC: UIViewController,
-                          completion: @escaping (String?, String?) -> Void) {
+    func checkEmailExists(email: String,
+                          completion: @escaping (Bool, String?) -> Void) {
         
-        guard let clientID = FirebaseApp.app()?.options.clientID else {
-            completion(nil, "Missing Google Client ID")
-            return
-        }
-        
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
-        
-        GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { result, error in
-            
-            if let error = error {
-                completion(nil, error.localizedDescription)
-                return
-            }
-            
-            guard let idToken = result?.user.idToken else {
-                completion(nil, "No Google ID Token")
-                return
-            }
-            
-            let credential = GoogleAuthProvider.credential(
-                withIDToken: idToken.tokenString,
-                accessToken: result?.user.accessToken.tokenString ?? ""
-            )
-            
-            Auth.auth().signIn(with: credential) { authResult, error in
-                if let error = error {
-                    completion(nil, error.localizedDescription)
-                    return
-                }
-                
-                completion(authResult?.user.uid, nil)
-            }
-        }
+        backend.checkEmailExists(email: email, completion: completion)
     }
     
-    func resetPassword(email: String, completion: @escaping (String?) -> Void) {
-        Auth.auth().sendPasswordReset(withEmail: email) { error in
-            if let error = error {
-                completion(error.localizedDescription)
-            } else {
-                completion(nil)
-            }
-        }
+    func getUserData(uid: String,
+                     completion: @escaping ([String: Any]?, String?) -> Void) {
+        backend.fetchUserData(uid: uid, completion: completion)
+    }
+    
+    func uploadProfileImage(uid: String,
+                            imageData: Data,
+                            completion: @escaping (String?, String?) -> Void) {
+        backend.uploadProfileImage(uid: uid,
+                                   imageData: imageData,
+                                   completion: completion)
+    }
+    
+    func updateUserPhotoURL(uid: String,
+                            photoURL: String,
+                            completion: @escaping (String?) -> Void) {
+        backend.updateUserPhotoURL(uid: uid,
+                                   photoURL: photoURL,
+                                   completion: completion)
     }
 }

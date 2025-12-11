@@ -19,16 +19,15 @@ class PasswordViewModel {
     func registerUser(with data: [String: String],
                       completion: @escaping (Bool, String?, String?, String?) -> Void) {
         
-        guard let email = data["email"],
-              let password = data["password"] else {
-            completion(false, "Missing fields", nil, nil)
-            return
-        }
+        let fullname = data["fullname"]!
+        let email = data["email"]!
+        let password = data["password"]!
         
-        authManager.signUp(email: email, password: password) { error in
+        AuthManager.shared.signUp(email: email, password: password, fullname: fullname) { userId, error in
             if let error {
                 completion(false, error, nil, nil)
             } else {
+                UserDefaults.standard.set(fullname, forKey: "fullname")
                 completion(true, nil, email, password)
             }
         }

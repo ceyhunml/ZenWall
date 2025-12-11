@@ -74,7 +74,7 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "heart.fill")
         )
         
-        let profileVC = LoginViewController()
+        let profileVC = ProfileViewController()
         profileVC.view.backgroundColor = .systemBackground
         profileVC.tabBarItem = UITabBarItem(
             title: "Profile",
