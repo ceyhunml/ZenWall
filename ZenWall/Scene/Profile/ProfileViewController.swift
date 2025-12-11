@@ -234,27 +234,25 @@ final class ProfileViewController: BaseViewController {
     
     // MARK: - Sign Out
     @objc private func signOutTapped() {
-        let alert = UIAlertController(title: "Signing out",
-                                      message: "Are you sure?",
-                                      preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        alert.addAction(UIAlertAction(title: "Yes",
-                                      style: .destructive,
-                                      handler: { _ in
-            
+        showDestructiveAlert(
+            title: "Signing out",
+            message: "Are you sure?",
+            destructiveTitle: "Yes"
+        ) {
             self.viewModel.signOut()
             
             guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let delegate = scene.delegate as? SceneDelegate,
                   let window = delegate.window else { return }
-            UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+            
+            UIView.transition(with: window,
+                              duration: 0.5,
+                              options: .transitionFlipFromRight,
+                              animations: {
                 window.rootViewController = UINavigationController(rootViewController: LoginViewController())
                 window.makeKeyAndVisible()
-            }, completion: nil)
-        }))
-        present(alert, animated: true)
+            })
+        }
     }
     
     @objc private func openSupport() {
@@ -280,25 +278,27 @@ final class ProfileViewController: BaseViewController {
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @objc private func selectImage() {
-        let sheet = UIAlertController(title: "Profile Photo",
-                                      message: "Choose a source",
-                                      preferredStyle: .actionSheet)
+        var actions: [(String, UIAlertAction.Style, () -> Void)] = []
         
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            sheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            actions.append(("Camera", .default, { [weak self] in
+                guard let self else { return }
                 self.imagePicker.sourceType = .camera
                 self.present(self.imagePicker, animated: true)
             }))
         }
         
-        sheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+        actions.append(("Gallery", .default, { [weak self] in
+            guard let self else { return }
             self.imagePicker.sourceType = .photoLibrary
             self.present(self.imagePicker, animated: true)
         }))
         
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        present(sheet, animated: true)
+        showActionSheet(
+            title: "Profile Photo",
+            message: "Choose a source",
+            actions: actions
+        )
     }
     
     func imagePickerController(_ picker: UIImagePickerController,
