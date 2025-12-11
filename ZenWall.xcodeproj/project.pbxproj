@@ -178,6 +178,7 @@
 				DEVELOPMENT_TEAM = 37K68STLJ2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZenWall/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "ZenWall needs camera access to take your profile photo.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "To save wallpapers to your photo library";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -210,6 +211,7 @@
 				DEVELOPMENT_TEAM = 37K68STLJ2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZenWall/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "ZenWall needs camera access to take your profile photo.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "To save wallpapers to your photo library";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
