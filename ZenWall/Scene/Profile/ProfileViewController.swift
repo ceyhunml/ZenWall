@@ -239,18 +239,21 @@ final class ProfileViewController: BaseViewController {
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { _ in
+        
+        alert.addAction(UIAlertAction(title: "Yes",
+                                      style: .destructive,
+                                      handler: { _ in
+            
             self.viewModel.signOut()
             
-            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
-               let window = sceneDelegate.window {
-                
-                UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
-                    window.rootViewController = LoginViewController()
-                })
-            }
+            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let delegate = scene.delegate as? SceneDelegate,
+                  let window = delegate.window else { return }
+            UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
+                window.rootViewController = UINavigationController(rootViewController: LoginViewController())
+                window.makeKeyAndVisible()
+            }, completion: nil)
         }))
-        
         present(alert, animated: true)
     }
     
