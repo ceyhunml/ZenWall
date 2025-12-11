@@ -45,14 +45,22 @@ class ProfileViewController: BaseViewController {
         return stack
     }()
     
+    private lazy var imagePicker: UIImagePickerController = {
+        let ip = UIImagePickerController()
+        ip.delegate = self
+        ip.allowsEditing = true
+        return ip
+    }()
+    
     var viewModel = ProfileViewModel()
+    
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.loadUser()
-        layoutUI()
         bindViewModel()
+        setupAvatarTap()
+        layoutUI()
     }
     
     private func makeRow(icon: String, title: String, isDestructive: Bool = false, action: Selector? = nil) -> UIView {
@@ -96,15 +104,66 @@ class ProfileViewController: BaseViewController {
         return container
     }
     
+    private func setupAvatarTap() {
+        avatarImageView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(selectImage))
+        avatarImageView.addGestureRecognizer(tap)
+    }
+    
+    @objc private func selectImage() {
+        let actionSheet = UIAlertController(title: "Profile Photo",
+                                            message: "Choose a source",
+                                            preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            self.openCamera()
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.openGallery()
+        }))
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(actionSheet, animated: true)
+    }
+    
+    private func openCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            print("Camera not available")
+            return
+        }
+        imagePicker.sourceType = .camera
+        present(imagePicker, animated: true)
+    }
+    
+    private func openGallery() {
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true)
+    }
+    
     // MARK: - Fill UI
     private func bindViewModel() {
-        viewModel.onDataLoaded = { [weak self] name, _ in
-            self?.nameLabel.text = name
+        
+        viewModel.onDataLoaded = { [weak self] fullname, email, photoURL in
+            guard let self else { return }
+            
+            DispatchQueue.main.async {
+                self.nameLabel.text = fullname
+                
+                if let url = photoURL {
+                    self.avatarImageView.setUnsplashImage(url)
+                } else {
+                    self.avatarImageView.image = UIImage(named: "placeholder-avatar")
+                }
+            }
         }
         
-        viewModel.onError = { [weak self] err in
-            self?.alertFor(title: "Error", message: err)
+        viewModel.onError = { error in
+            print("ERROR: \(error)")
         }
+        
+        viewModel.loadUser()
     }
     
     // MARK: - Layout
@@ -160,5 +219,61 @@ class ProfileViewController: BaseViewController {
         })
         alertForSignOut.addAction(yesAction)
         present(alertForSignOut, animated: true)
+    }
+}
+
+
+extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    /// Picker-i açmaq üçün sadə wrapper
+    func presentImagePicker() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        present(picker, animated: true)
+    }
+    
+    // MARK: - Image Selected
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+    ) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.editedImage] as? UIImage ??
+                info[.originalImage] as? UIImage else {
+            return
+        }
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return }
+        guard let uid = UserDefaults.standard.string(forKey: "userId") else { return }
+        
+        AuthManager.shared.uploadProfileImage(uid: uid, imageData: imageData) { [weak self] url, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Upload error: \(error)")
+                return
+            }
+            
+            guard let url = url else { return }
+            
+            /// 2) Update Firestore `photoURL`
+            AuthManager.shared.updateUserPhotoURL(uid: uid, photoURL: url) { error in
+                if let error = error {
+                    print("Firestore update error: \(error)")
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    self.avatarImageView.image = image
+                }
+            }
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }

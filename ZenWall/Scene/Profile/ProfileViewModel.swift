@@ -10,7 +10,7 @@ import Foundation
 class ProfileViewModel {
     
     // MARK: - Outputs
-    var onDataLoaded: ((String, String) -> Void)?
+    var onDataLoaded: ((String, String, String?) -> Void)?
     var onError: ((String) -> Void)?
     
     // MARK: - Sign Out
@@ -37,7 +37,10 @@ class ProfileViewModel {
                 self.onError?("Invalid data")
                 return
             }
-            self.onDataLoaded?(fullname, email)
+
+            let photoURL = data["photoURL"] as? String
+            
+            self.onDataLoaded?(fullname, email, photoURL)
         }
     }
 }

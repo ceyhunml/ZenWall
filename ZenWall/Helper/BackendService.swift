@@ -22,6 +22,15 @@ protocol BackendService {
     
     func checkEmailExists(email: String,
                           completion: @escaping (Bool, String?) -> Void)
+    
     func fetchUserData(uid: String,
-                     completion: @escaping ([String: Any]?, String?) -> Void)
+                       completion: @escaping ([String: Any]?, String?) -> Void)
+    
+    func uploadProfileImage(uid: String,
+                            imageData: Data,
+                            completion: @escaping (String?, String?) -> Void)
+    
+    func updateUserPhotoURL(uid: String,
+                            photoURL: String,
+                            completion: @escaping (String?) -> Void)
 }

@@ -41,4 +41,20 @@ final class AuthManager {
                      completion: @escaping ([String: Any]?, String?) -> Void) {
         backend.fetchUserData(uid: uid, completion: completion)
     }
+    
+    func uploadProfileImage(uid: String,
+                            imageData: Data,
+                            completion: @escaping (String?, String?) -> Void) {
+        backend.uploadProfileImage(uid: uid,
+                                   imageData: imageData,
+                                   completion: completion)
+    }
+    
+    func updateUserPhotoURL(uid: String,
+                            photoURL: String,
+                            completion: @escaping (String?) -> Void) {
+        backend.updateUserPhotoURL(uid: uid,
+                                   photoURL: photoURL,
+                                   completion: completion)
+    }
 }

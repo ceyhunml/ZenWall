@@ -187,4 +187,39 @@ final class FirebaseAdapter: BackendService {
             completion(snapshot?.data(), nil)
         }
     }
+    
+    func uploadProfileImage(uid: String,
+                            imageData: Data,
+                            completion: @escaping (String?, String?) -> Void) {
+        
+        let storageRef = Storage.storage().reference()
+            .child("profile_images/\(uid).jpg")
+        
+        storageRef.putData(imageData, metadata: nil) { _, error in
+            if let error = error {
+                completion(nil, error.localizedDescription)
+                return
+            }
+            
+            storageRef.downloadURL { url, error in
+                if let error = error {
+                    completion(nil, error.localizedDescription)
+                    return
+                }
+                
+                completion(url?.absoluteString, nil)
+            }
+        }
+    }
+    
+    
+    func updateUserPhotoURL(uid: String,
+                            photoURL: String,
+                            completion: @escaping (String?) -> Void) {
+        
+        firestore.collection("users").document(uid)
+            .updateData(["photoURL": photoURL]) { error in
+                completion(error?.localizedDescription)
+            }
+    }
 }
