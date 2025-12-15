@@ -8,7 +8,7 @@
 import UIKit
 
 final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelegate {
-
+    
     // MARK: - UI Elements
     private lazy var backgroundImageView: UIImageView = {
         let iv = UIImageView()
@@ -138,6 +138,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .black
+        setupFavoriteButton()
         fullButton.addTarget(self, action: #selector(saveFullImage), for: .touchUpInside)
         lowButton.addTarget(self, action: #selector(saveLowImage), for: .touchUpInside)
         
@@ -208,12 +209,35 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         ])
     }
     
+    private func setupFavoriteButton() {
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "heart"),
+            style: .plain,
+            target: self,
+            action: #selector(favoriteTapped)
+        )
+        button.tintColor = .white
+        navigationItem.rightBarButtonItem = button
+    }
+    
+    @objc private func favoriteTapped() {
+        viewModel.toggleFavorite()
+    }
+    
     private func setupBindings() {
         viewModel.onImageURL = { [weak self] url in
             guard let self, let url else { return }
             self.wallpaperImageView.setUnsplashImage(url)
             self.backgroundImageView.setUnsplashImage(url)
         }
+        viewModel.onFavoriteChanged = { [weak self] isFavorite in
+            self?.updateFavoriteIcon(isFavorite)
+        }
+    }
+    
+    private func updateFavoriteIcon(_ isFavorite: Bool) {
+        let name = isFavorite ? "heart.fill" : "heart"
+        navigationItem.rightBarButtonItem?.image = UIImage(systemName: name)
     }
     
     private func setupGestures() {

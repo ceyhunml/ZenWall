@@ -68,6 +68,41 @@ class ListViewController: BaseViewController {
         viewModel.refresh()
     }
     
+    private func saveImage(photo: UnsplashPhoto) {
+        guard let url = photo.urls?.full
+        else { return }
+        
+        UIImage.downloadAndSave(from: url) { [weak self] result in
+            guard let self else { return }
+            
+            let (title, message): (String, String)
+            
+            switch result {
+            case .success:
+                title = "Success"
+                message = "Photo added to your library!"
+                
+            case .denied:
+                title = "Permission Denied"
+                message = "Please allow access to your Photo Library."
+                
+            case .invalidURL:
+                title = "Invalid URL"
+                message = "Something went wrong. The image URL is invalid."
+                
+            case .downloadFailed:
+                title = "Download Failed"
+                message = "Could not download photo. Please try again."
+                
+            case .saveFailed:
+                title = "Error"
+                message = "Failed to save image to your gallery."
+            }
+            
+            self.alertFor(title: title, message: message)
+        }
+    }
+    
     private func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
@@ -109,6 +144,9 @@ extension ListViewController: UICollectionViewDataSource, UICollectionViewDelega
             self?.viewModel.toggleFavorite(photoId: photoId) { success in
                 completion(success)
             }
+        }
+        cell.onDownload = { _ in
+            self.saveImage(photo: photo)
         }
         
         return cell
