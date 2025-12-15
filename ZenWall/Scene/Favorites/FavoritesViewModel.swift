@@ -52,39 +52,23 @@ final class FavoritesViewModel {
         favoritesManager.isFavorite(id: id)
     }
     
-    // MARK: - Private
-    
     private func loadPhotos() {
         let group = DispatchGroup()
-        
-        var orderedPhotos: [String: UnsplashPhoto] = [:]
         favoritePhotos.removeAll()
         
         for id in favoriteIDs {
             group.enter()
             
-            photosManager.getPhoto(id: id) { [weak self] photo, error in
-                defer { group.leave() }
-                
-                if let error {
-                    self?.error?(error)
-                    return
-                }
-                
+            photosManager.getPhoto(id: id) { [weak self] photo, _ in
                 if let photo {
-                    orderedPhotos[id] = photo
+                    self?.favoritePhotos.append(photo)
                 }
+                group.leave()
             }
         }
         
         group.notify(queue: .main) { [weak self] in
-            guard let self else { return }
-            
-            self.favoritePhotos = self.favoriteIDs.compactMap {
-                orderedPhotos[$0]
-            }
-            
-            self.success?()
+            self?.success?()
         }
     }
 }

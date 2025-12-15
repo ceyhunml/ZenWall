@@ -64,11 +64,9 @@ class FavoritesViewController: BaseViewController {
             self?.collectionView.reloadData()
             self?.refreshControl.endRefreshing()
         }
-        
         viewModel.error = { message in
             print("Error:", message)
         }
-        
         viewModel.getFavorites()
     }
     
