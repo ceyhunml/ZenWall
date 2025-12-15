@@ -1,16 +1,16 @@
 //
-//  ListViewController.swift
+//  FavoritesViewController.swift
 //  ZenWall
 //
-//  Created by Ceyhun Məmmədli on 14.11.25.
+//  Created by Ceyhun Məmmədli on 13.12.25.
 //
 
 import UIKit
 
-class ListViewController: BaseViewController {
+class FavoritesViewController: BaseViewController {
     
     private lazy var collectionView: UICollectionView = {
-        let layout = ListViewController.createLayout()
+        let layout = FavoritesViewController.createLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.delegate = self
         cv.dataSource = self
@@ -25,33 +25,28 @@ class ListViewController: BaseViewController {
         return rc
     }()
     
-    private let viewModel: ListViewModel
-    
-    init(viewModel: ListViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let viewModel = FavoritesViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.largeTitleDisplayMode = .never
-        setupDefaultBar()
         setupCollectionView()
-        bindViewModel()
-        viewModel.fetchImages()
+        loadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        viewModel.getFavorites()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        collectionView.reloadData()
+        navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
+        collectionView.setContentOffset(.zero, animated: false)
     }
     
     private func setupCollectionView() {
-        title = viewModel.selectedTopicForUI
+        title = "Favorites"
+        navigationItem.largeTitleDisplayMode = .always
         view.addSubview(collectionView)
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
@@ -64,67 +59,66 @@ class ListViewController: BaseViewController {
         ])
     }
     
-    @objc private func refreshData() {
-        viewModel.refresh()
-    }
-    
-    private func bindViewModel() {
+    func loadData() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
             self?.refreshControl.endRefreshing()
         }
         
-        viewModel.error = { errorMessage in
-            print("Error: \(errorMessage)")
+        viewModel.error = { message in
+            print("Error:", message)
         }
+        
+        viewModel.getFavorites()
+    }
+    
+    @objc func refreshData() {
+        viewModel.getFavorites()
     }
 }
 
 // MARK: - UICollectionViewDataSource
-extension ListViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
+extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.photos.count
+        viewModel.favoritePhotos.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: "WallpaperCell",
-            for: indexPath
-        ) as! WallpaperCell
-        
-        let photo = viewModel.photos[indexPath.row]
-        let photoId = photo.id ?? ""
-        let imageURL = photo.urls?.regular ?? ""
-        
-        let isFavorite = viewModel.isFavorite(photoId: photoId)
-        
-        cell.configure(
-            imageURL: imageURL,
-            photoId: photoId,
-            isFavorite: isFavorite
-        )
-        
-        cell.onToggleFavorite = { [weak self] photoId, _, completion in
-            self?.viewModel.toggleFavorite(photoId: photoId) { success in
-                completion(success)
+    func collectionView(
+            _ collectionView: UICollectionView,
+            cellForItemAt indexPath: IndexPath
+        ) -> UICollectionViewCell {
+
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "WallpaperCell",
+                for: indexPath
+            ) as! WallpaperCell
+
+            let photo = viewModel.favoritePhotos[indexPath.item]
+            let isFavorite = viewModel.isFavorite(id: photo.id ?? "")
+
+            cell.configure(
+                imageURL: photo.urls?.regular ?? "",
+                photoId: photo.id ?? "",
+                isFavorite: isFavorite
+            )
+
+            cell.onToggleFavorite = { [weak self] photoId, newState, completion in
+                self?.viewModel.toggleFavorite(id: photoId) { success in
+                    completion(success)
+                }
             }
+
+            return cell
         }
-        
-        return cell
-    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.photos[indexPath.row])
+        let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.favoritePhotos[indexPath.row])
         coordinator.start()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        viewModel.pagination(index: indexPath.row)
     }
 }
 
-extension ListViewController {
+extension FavoritesViewController {
     static func createLayout() -> UICollectionViewLayout {
         return UICollectionViewCompositionalLayout { _, _ in
             let itemSize = NSCollectionLayoutSize(

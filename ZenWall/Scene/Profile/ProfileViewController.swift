@@ -12,15 +12,6 @@ import SafariServices
 final class ProfileViewController: BaseViewController {
     
     // MARK: - UI Elements
-    private lazy var titleLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.text = "Profile"
-        lbl.font = .systemFont(ofSize: 20, weight: .bold)
-        lbl.textColor = UIColor(red: 0.91, green: 0.88, blue: 0.84, alpha: 1)
-        lbl.textAlignment = .center
-        return lbl
-    }()
-    
     private lazy var avatarImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
@@ -181,7 +172,6 @@ final class ProfileViewController: BaseViewController {
     
     // MARK: - Layout UI
     private func layoutUI() {
-        view.addSubview(titleLabel)
         view.addSubview(avatarImageView)
         view.addSubview(editPhotoButton)
         view.addSubview(nameLabel)
@@ -197,7 +187,8 @@ final class ProfileViewController: BaseViewController {
         ]
             .forEach { listContainer.addArrangedSubview($0) }
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        title = "Profile"
+        
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         editPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -205,10 +196,7 @@ final class ProfileViewController: BaseViewController {
         versionLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            avatarImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
+            avatarImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             avatarImageView.widthAnchor.constraint(equalToConstant: 128),
             avatarImageView.heightAnchor.constraint(equalToConstant: 128),

@@ -66,22 +66,30 @@ final class CustomTabBar: UITabBarController {
             selectedImage: UIImage(systemName: "circle.grid.2x2.fill")
         )
         
-        let favoritesVC = UIViewController()
+        let favoritesNav = UINavigationController()
+        favoritesNav.navigationBar.prefersLargeTitles = true
+        let favoritesVC = FavoritesViewController()
         favoritesVC.view.backgroundColor = .systemBackground
-        favoritesVC.tabBarItem = UITabBarItem(
+        favoritesNav.viewControllers = [favoritesVC]
+        favoritesNav.tabBarItem = UITabBarItem(
             title: "Favorites",
             image: UIImage(systemName: "heart"),
             selectedImage: UIImage(systemName: "heart.fill")
         )
         
+        let profileNav = UINavigationController()
         let profileVC = ProfileViewController()
         profileVC.view.backgroundColor = .systemBackground
-        profileVC.tabBarItem = UITabBarItem(
+        profileNav.viewControllers = [profileVC]
+        profileNav.tabBarItem = UITabBarItem(
             title: "Profile",
             image: UIImage(systemName: "person"),
             selectedImage: UIImage(systemName: "person.fill")
         )
         
-        setViewControllers([homeNav, categoriesNav, favoritesVC, profileVC], animated: false)
+        setViewControllers(
+            [homeNav, categoriesNav, favoritesNav, profileNav],
+            animated: false
+        )
     }
 }

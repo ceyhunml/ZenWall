@@ -132,11 +132,29 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             return cell
             
         default:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperCell", for: indexPath) as! WallpaperCell
-            if indexPath.row < viewModel.photos.count,
-               let url = viewModel.photos[indexPath.row].urls?.raw {
-                cell.configure(imageURL: url)
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "WallpaperCell",
+                for: indexPath
+            ) as! WallpaperCell
+            
+            let photo = viewModel.photos[indexPath.row]
+            let photoId = photo.id ?? ""
+            let imageURL = photo.urls?.regular ?? ""
+            
+            let isFavorite = viewModel.isFavorite(photoId: photoId)
+            
+            cell.configure(
+                imageURL: imageURL,
+                photoId: photoId,
+                isFavorite: isFavorite
+            )
+            
+            cell.onToggleFavorite = { [weak self] photoId, _, completion in
+                self?.viewModel.toggleFavorite(photoId: photoId) { success in
+                    completion(success)
+                }
             }
+            
             return cell
         }
     }

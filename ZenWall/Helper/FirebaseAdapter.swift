@@ -160,6 +160,7 @@ final class FirebaseAdapter: BackendService {
         let data: [String: Any] = [
             "fullname": fullname ?? "",
             "email": email ?? "",
+            "favorites": [],
             "createdAt": FieldValue.serverTimestamp()
         ]
         
@@ -177,7 +178,7 @@ final class FirebaseAdapter: BackendService {
     func fetchUserData(uid: String,
                        completion: @escaping ([String: Any]?, String?) -> Void) {
         
-        firestore.collection("users").document(uid).getDocument { snapshot, error in
+        usersCollection.document(uid).getDocument { snapshot, error in
             
             if let error {
                 completion(nil, error.localizedDescription)
@@ -217,9 +218,57 @@ final class FirebaseAdapter: BackendService {
                             photoURL: String,
                             completion: @escaping (String?) -> Void) {
         
-        firestore.collection("users").document(uid)
+        usersCollection.document(uid)
             .updateData(["photoURL": photoURL]) { error in
                 completion(error?.localizedDescription)
+            }
+    }
+    
+    func addFavorite(
+        userId: String,
+        favoriteId: String,
+        completion: @escaping (String?) -> Void
+    ) {
+        usersCollection
+            .document(userId)
+            .updateData([
+                "favorites": FieldValue.arrayUnion([favoriteId])
+            ]) { error in
+                completion(error?.localizedDescription)
+            }
+    }
+    
+    func removeFavorite(
+        userId: String,
+        favoriteId: String,
+        completion: @escaping (String?) -> Void
+    ) {
+        usersCollection
+            .document(userId)
+            .updateData([
+                "favorites": FieldValue.arrayRemove([favoriteId])
+            ]) { error in
+                completion(error?.localizedDescription)
+            }
+    }
+    
+    func fetchFavoriteIDs(
+        userId: String,
+        completion: @escaping ([String], String?) -> Void
+    ) {
+        usersCollection
+            .document(userId)
+            .getDocument { snapshot, error in
+                
+                if let error {
+                    completion([], error.localizedDescription)
+                    return
+                }
+                
+                let favorites = snapshot?
+                    .data()?["favorites"] as? [String] ?? []
+                
+                completion(favorites, nil)
             }
     }
 }
