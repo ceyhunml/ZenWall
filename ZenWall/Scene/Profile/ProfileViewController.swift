@@ -8,6 +8,7 @@
 import UIKit
 import StoreKit
 import SafariServices
+import PhotosUI
 
 final class ProfileViewController: BaseViewController {
     
@@ -60,15 +61,12 @@ final class ProfileViewController: BaseViewController {
         return lbl
     }()
     
-    private let imagePicker = UIImagePickerController()
     private let viewModel = ProfileViewModel()
-    
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupAvatarTap()
-        setupPicker()
         layoutUI()
         bindViewModel()
         viewModel.loadUser()
@@ -139,11 +137,6 @@ final class ProfileViewController: BaseViewController {
     private func setupAvatarTap() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(selectImage))
         avatarImageView.addGestureRecognizer(tap)
-    }
-    
-    private func setupPicker() {
-        imagePicker.delegate = self
-        imagePicker.allowsEditing = true
     }
     
     
@@ -243,6 +236,46 @@ final class ProfileViewController: BaseViewController {
         }
     }
     
+    private func openCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else { return }
+        
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    private func openPhotoLibrary() {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 1
+        config.filter = .images
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    @objc private func selectImage() {
+        var actions: [(String, UIAlertAction.Style, () -> Void)] = []
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            actions.append(("Camera", .default, { [weak self] in
+                self?.openCamera()
+            }))
+        }
+        
+        actions.append(("Gallery", .default, { [weak self] in
+            self?.openPhotoLibrary()
+        }))
+        
+        showActionSheet(
+            title: "Profile Photo",
+            message: "Choose a source",
+            actions: actions
+        )
+    }
+    
     @objc private func openSupport() {
         let email = "support@zenwall.app"
         if let url = URL(string: "mailto:\(email)") {
@@ -264,30 +297,6 @@ final class ProfileViewController: BaseViewController {
 }
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    @objc private func selectImage() {
-        var actions: [(String, UIAlertAction.Style, () -> Void)] = []
-        
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            actions.append(("Camera", .default, { [weak self] in
-                guard let self else { return }
-                self.imagePicker.sourceType = .camera
-                self.present(self.imagePicker, animated: true)
-            }))
-        }
-        
-        actions.append(("Gallery", .default, { [weak self] in
-            guard let self else { return }
-            self.imagePicker.sourceType = .photoLibrary
-            self.present(self.imagePicker, animated: true)
-        }))
-        
-        showActionSheet(
-            title: "Profile Photo",
-            message: "Choose a source",
-            actions: actions
-        )
-    }
     
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -318,5 +327,37 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
+    }
+}
+
+extension ProfileViewController: PHPickerViewControllerDelegate {
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let itemProvider = results.first?.itemProvider,
+              itemProvider.canLoadObject(ofClass: UIImage.self)
+        else { return }
+        
+        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
+            guard let self,
+                  let image = image as? UIImage,
+                  let data = image.jpegData(compressionQuality: 0.8),
+                  let uid = UserDefaults.standard.string(forKey: "userId")
+            else { return }
+            
+            AuthManager.shared.uploadProfileImage(uid: uid, imageData: data) { url, error in
+                if let error { print(error); return }
+                guard let url else { return }
+                
+                AuthManager.shared.updateUserPhotoURL(uid: uid, photoURL: url) { error in
+                    if let error { print(error); return }
+                    
+                    DispatchQueue.main.async {
+                        self.avatarImageView.image = image
+                    }
+                }
+            }
+        }
     }
 }

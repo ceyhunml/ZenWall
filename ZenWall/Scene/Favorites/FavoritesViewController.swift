@@ -118,38 +118,45 @@ extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(
-            _ collectionView: UICollectionView,
-            cellForItemAt indexPath: IndexPath
-        ) -> UICollectionViewCell {
-
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "WallpaperCell",
-                for: indexPath
-            ) as! WallpaperCell
-
-            let photo = viewModel.favoritePhotos[indexPath.item]
-            let isFavorite = viewModel.isFavorite(id: photo.id ?? "")
-
-            cell.configure(
-                imageURL: photo.urls?.regular ?? "",
-                photoId: photo.id ?? "",
-                isFavorite: isFavorite
-            )
-
-            cell.onToggleFavorite = { [weak self] photoId, newState, completion in
-                self?.viewModel.toggleFavorite(id: photoId) { success in
-                    completion(success)
-                }
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "WallpaperCell",
+            for: indexPath
+        ) as! WallpaperCell
+        
+        let photo = viewModel.favoritePhotos[indexPath.item]
+        let isFavorite = viewModel.isFavorite(id: photo.id ?? "")
+        
+        cell.configure(
+            imageURL: photo.urls?.regular ?? "",
+            photoId: photo.id ?? "",
+            isFavorite: isFavorite
+        )
+        
+        cell.onToggleFavorite = { [weak self] photoId, newState, completion in
+            self?.viewModel.toggleFavorite(id: photoId) { success in
+                completion(success)
             }
-            cell.onDownload = { _ in
-                self.saveImage(photo: photo)
-            }
-
-            return cell
         }
+        cell.onDownload = { _ in
+            self.saveImage(photo: photo)
+        }
+        
+        return cell
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.favoritePhotos[indexPath.row])
+        guard let cell = collectionView.cellForItem(at: indexPath) as? WallpaperCell else {
+            return
+        }
+        let coordinator = WallpaperDetailsCoordinator(
+            navigationController: navigationController!,
+            photo: viewModel.favoritePhotos[indexPath.row],
+            sourceImageView: cell.imageView
+        )
         coordinator.start()
     }
 }

@@ -108,4 +108,29 @@ extension UIViewController {
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    func hideNavBarButtons() {
+        navBarButtonViews().forEach { $0.alpha = 0 }
+    }
+    
+    func showNavBarButtons() {
+        let buttons = navBarButtonViews()
+        buttons.forEach { $0.alpha = 0 }
+        
+        UIView.animate(
+            withDuration: 0.25,
+            delay: 0,
+            options: [.curveEaseOut]
+        ) {
+            buttons.forEach { $0.alpha = 1 }
+        }
+    }
+    
+    func navBarButtonViews() -> [UIView] {
+        guard let navBar = navigationController?.navigationBar else { return [] }
+        
+        return navBar.subviews.filter {
+            String(describing: type(of: $0)).contains("BarButton")
+        }
+    }
 }

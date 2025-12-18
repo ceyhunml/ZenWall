@@ -153,7 +153,14 @@ extension ListViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: viewModel.photos[indexPath.row])
+        guard let cell = collectionView.cellForItem(at: indexPath) as? WallpaperCell else {
+            return
+        }
+        let coordinator = WallpaperDetailsCoordinator(
+            navigationController: navigationController!,
+            photo: viewModel.photos[indexPath.row],
+            sourceImageView: cell.imageView
+        )
         coordinator.start()
     }
     

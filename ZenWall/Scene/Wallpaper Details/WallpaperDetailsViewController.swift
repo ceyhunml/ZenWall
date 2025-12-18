@@ -33,7 +33,8 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         sv.maximumZoomScale = 3.0
         sv.showsVerticalScrollIndicator = false
         sv.showsHorizontalScrollIndicator = false
-        sv.layer.masksToBounds = false
+        sv.clipsToBounds = true
+        sv.layer.masksToBounds = true
         sv.isOpaque = true
         sv.backgroundColor = .clear
         sv.translatesAutoresizingMaskIntoConstraints = false
@@ -106,6 +107,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Properties
     private let viewModel: WallpaperDetailsViewModel
     private var isFullScreen = false
+    private var shouldShowNavButtons = false
     
     // MARK: - Init
     init(viewModel: WallpaperDetailsViewModel) {
@@ -123,16 +125,31 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         applyTransparentNavBar()
         setupUI()
         setupBindings()
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
         setupGestures()
         viewModel.loadImage()
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         applyTransparentNavBar()
+        
+        guard let coordinator = transitionCoordinator else {
+            showNavButtonsAnimated()
+            return
+        }
+        
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.showNavButtonsAnimated()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         setupDefaultBar()
+        navigationItem.rightBarButtonItem = nil
+        shouldShowNavButtons = false
     }
     
     // MARK: - Setup
@@ -222,6 +239,30 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     
     @objc private func favoriteTapped() {
         viewModel.toggleFavorite()
+    }
+    
+    private func showNavButtonsAnimated() {
+        guard !shouldShowNavButtons else { return }
+        shouldShowNavButtons = true
+
+        let heart = UIBarButtonItem(
+            image: UIImage(systemName: "heart"),
+            style: .plain,
+            target: self,
+            action: #selector(favoriteTapped)
+        )
+        heart.tintColor = .white
+
+        navigationItem.rightBarButtonItem = heart
+
+        // BACK BUTTON üçün
+        navigationItem.leftItemsSupplementBackButton = true
+
+        // 🔥 FADE-IN
+        navigationController?.navigationBar.alpha = 0
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut]) {
+            self.navigationController?.navigationBar.alpha = 1
+        }
     }
     
     private func setupBindings() {

@@ -10,7 +10,7 @@ import UIKit
 final class WallpaperCell: UICollectionViewCell {
     
     // MARK: - UI
-    private lazy var imageView: UIImageView = {
+    let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.layer.cornerRadius = 16
@@ -45,7 +45,7 @@ final class WallpaperCell: UICollectionViewCell {
     
     // MARK: - State
     private var isFavorite: Bool = false
-    private var photoId: String?
+    var photoId: String?
     
     // MARK: - Callbacks
     var onToggleFavorite: ((String, Bool, @escaping (Bool) -> Void) -> Void)?

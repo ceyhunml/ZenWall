@@ -23,7 +23,7 @@ class GoogleSignInAdapter {
             
             if let error { completion(nil, error.localizedDescription); return }
             
-            guard let googleUser = result?.user else {
+            guard (result?.user) != nil else {
                 completion(nil, "No Google User")
                 return
             }

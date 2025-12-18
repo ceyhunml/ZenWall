@@ -220,11 +220,15 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let photoOfDay = viewModel.photoOfDay else { return }
-        if indexPath.section != 0 {
-            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: indexPath.section == 1 ? photoOfDay : viewModel.photos[indexPath.row])
-            coordinator.start()
+        guard let cell = collectionView.cellForItem(at: indexPath) as? WallpaperCell else {
+            return
         }
+        let coordinator = WallpaperDetailsCoordinator(
+            navigationController: navigationController!,
+            photo: viewModel.photos[indexPath.row],
+            sourceImageView: cell.imageView
+        )
+        coordinator.start()
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
