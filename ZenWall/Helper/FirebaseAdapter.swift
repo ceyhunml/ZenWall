@@ -16,12 +16,37 @@ final class FirebaseAdapter: BackendService {
     static let shared = FirebaseAdapter()
     var auth: FirebaseAuth.Auth { Auth.auth() }
     var firestore: Firestore { Firestore.firestore() }
-
+    
     private init() {}
     
     // MARK: - Configure
     func configure() {
         FirebaseApp.configure()
+    }
+    
+    func fetchAccessKey(
+        completion: @escaping (String?, String?) -> Void
+    ) {
+        firestore
+            .collection("config")
+            .document("unsplash")
+            .getDocument { snapshot, error in
+                
+                if let error {
+                    completion(nil, error.localizedDescription)
+                    return
+                }
+                
+                guard
+                    let key = snapshot?.data()?["accessKey"] as? String,
+                    !key.isEmpty
+                else {
+                    completion(nil, "Access key not found")
+                    return
+                }
+                
+                completion(key, nil)
+            }
     }
     
     // MARK: - Email Login

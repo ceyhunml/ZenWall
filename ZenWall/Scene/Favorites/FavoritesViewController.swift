@@ -34,7 +34,7 @@ class FavoritesViewController: BaseViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        viewModel.getFavorites()
+        //viewModel.getFavorites()
     }
     
     override func viewWillAppear(_ animated: Bool) {

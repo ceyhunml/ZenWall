@@ -125,8 +125,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         applyTransparentNavBar()
         setupUI()
         setupBindings()
-        navigationItem.rightBarButtonItem = nil
-        navigationItem.leftBarButtonItem = nil
         setupGestures()
         viewModel.loadImage()
     }
@@ -134,15 +132,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         applyTransparentNavBar()
-        
-        guard let coordinator = transitionCoordinator else {
-            showNavButtonsAnimated()
-            return
-        }
-        
-        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
-            self?.showNavButtonsAnimated()
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -239,30 +228,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     
     @objc private func favoriteTapped() {
         viewModel.toggleFavorite()
-    }
-    
-    private func showNavButtonsAnimated() {
-        guard !shouldShowNavButtons else { return }
-        shouldShowNavButtons = true
-
-        let heart = UIBarButtonItem(
-            image: UIImage(systemName: "heart"),
-            style: .plain,
-            target: self,
-            action: #selector(favoriteTapped)
-        )
-        heart.tintColor = .white
-
-        navigationItem.rightBarButtonItem = heart
-
-        // BACK BUTTON üçün
-        navigationItem.leftItemsSupplementBackButton = true
-
-        // 🔥 FADE-IN
-        navigationController?.navigationBar.alpha = 0
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut]) {
-            self.navigationController?.navigationBar.alpha = 1
-        }
     }
     
     private func setupBindings() {
