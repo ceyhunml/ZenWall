@@ -12,16 +12,16 @@ class WallpaperDetailsCoordinator: Coordinator {
     
     var navigationController: UINavigationController
     private let photo: UnsplashPhoto
-    private let sourceImageView: UIImageView
+    private let sourceCell: UICollectionViewCell
     
     init(
         navigationController: UINavigationController,
         photo: UnsplashPhoto,
-        sourceImageView: UIImageView
+        sourceCell: UICollectionViewCell
     ) {
         self.navigationController = navigationController
         self.photo = photo
-        self.sourceImageView = sourceImageView
+        self.sourceCell = sourceCell
     }
     
     func start() {
@@ -29,9 +29,11 @@ class WallpaperDetailsCoordinator: Coordinator {
         let detailVC = WallpaperDetailsViewController(viewModel: detailVM)
         
         detailVC.hidesBottomBarWhenPushed = true
-        detailVC.preferredTransition = .zoom { _ in
-            return self.sourceImageView
-        }
+        detailVC.preferredTransition = .zoom(
+            sourceViewProvider: {context in 
+                self.sourceCell.contentView
+            }
+        )
         navigationController.pushViewController(detailVC, animated: true)
     }
 }

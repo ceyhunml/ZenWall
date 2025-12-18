@@ -149,13 +149,13 @@ extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? WallpaperCell else {
+        guard let cell = collectionView.cellForItem(at: indexPath) else {
             return
         }
         let coordinator = WallpaperDetailsCoordinator(
             navigationController: navigationController!,
             photo: viewModel.favoritePhotos[indexPath.row],
-            sourceImageView: cell.imageView
+            sourceCell: cell
         )
         coordinator.start()
     }
