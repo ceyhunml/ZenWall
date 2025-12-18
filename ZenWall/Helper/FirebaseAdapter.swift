@@ -10,16 +10,13 @@ import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
-import GoogleSignIn
 
 final class FirebaseAdapter: BackendService {
     
     static let shared = FirebaseAdapter()
-    
-    var auth = FirebaseAuth.Auth.auth()
-    private let firestore = Firestore.firestore()
-    private let usersCollection = Firestore.firestore().collection("users")
-    
+    var auth: FirebaseAuth.Auth { Auth.auth() }
+    var firestore: Firestore { Firestore.firestore() }
+
     private init() {}
     
     // MARK: - Configure
@@ -80,48 +77,58 @@ final class FirebaseAdapter: BackendService {
     }
     
     // MARK: - Google Login
-    func signInWithGoogle(presentingVC: UIViewController,
-                          completion: @escaping (String?, String?) -> Void) {
-        
+    func signInWithGoogle(presentingVC: UIViewController, completion: @escaping (String?, String?) -> Void) {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             completion(nil, "Missing Google Client ID")
             return
         }
         
-        let config = GIDConfiguration(clientID: clientID)
-        GIDSignIn.sharedInstance.configuration = config
-        
-        GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { result, error in
+        GoogleSignInAdapter.shared.signIn(
+            clientID: clientID,
+            presentingVC: presentingVC
+        ) { idToken, accessToken, fullname, email, error in
             
-            if let error { completion(nil, error.localizedDescription); return }
+            if let error {
+                completion(nil, error)
+                return
+            }
             
-            guard let googleUser = result?.user else {
-                completion(nil, "No Google User")
+            guard let idToken,
+                  let accessToken
+            else {
+                completion(nil, "Missing Google Tokens")
                 return
             }
             
             let credential = GoogleAuthProvider.credential(
-                withIDToken: googleUser.idToken?.tokenString ?? "",
-                accessToken: googleUser.accessToken.tokenString
+                withIDToken: idToken,
+                accessToken: accessToken
             )
             
             Auth.auth().signIn(with: credential) { authResult, error in
                 
-                if let error { completion(nil, error.localizedDescription); return }
+                if let error {
+                    completion(nil, error.localizedDescription)
+                    return
+                }
                 
                 guard let userId = authResult?.user.uid else {
                     completion(nil, "Missing Firebase User ID")
                     return
                 }
                 
-                let fullname = googleUser.profile?.name
-                let email = googleUser.profile?.email
+                UserSessionManager.shared.userId = userId
                 
-                self.saveUserData(userId: userId,
-                                  fullname: fullname,
-                                  email: email) { saveError in
-                    if let saveError { completion(nil, saveError) }
-                    else { completion(userId, nil) }
+                self.saveUserData(
+                    userId: userId,
+                    fullname: fullname,
+                    email: email
+                ) { saveError in
+                    if let saveError {
+                        completion(nil, saveError)
+                    } else {
+                        completion(userId, nil)
+                    }
                 }
             }
         }
@@ -166,7 +173,7 @@ final class FirebaseAdapter: BackendService {
         
         UserSessionManager.shared.isLoggedIn = true
         
-        usersCollection.document(userId).setData(data, merge: true) { error in
+        Firestore.firestore().collection("users").document(userId).setData(data, merge: true) { error in
             if let error {
                 completion(error.localizedDescription)
             } else {
@@ -178,7 +185,7 @@ final class FirebaseAdapter: BackendService {
     func fetchUserData(uid: String,
                        completion: @escaping ([String: Any]?, String?) -> Void) {
         
-        usersCollection.document(uid).getDocument { snapshot, error in
+        Firestore.firestore().collection("users").document(uid).getDocument { snapshot, error in
             
             if let error {
                 completion(nil, error.localizedDescription)
@@ -218,7 +225,7 @@ final class FirebaseAdapter: BackendService {
                             photoURL: String,
                             completion: @escaping (String?) -> Void) {
         
-        usersCollection.document(uid)
+        Firestore.firestore().collection("users").document(uid)
             .updateData(["photoURL": photoURL]) { error in
                 completion(error?.localizedDescription)
             }
@@ -229,7 +236,7 @@ final class FirebaseAdapter: BackendService {
         favoriteId: String,
         completion: @escaping (String?) -> Void
     ) {
-        usersCollection
+        Firestore.firestore().collection("users")
             .document(userId)
             .updateData([
                 "favorites": FieldValue.arrayUnion([favoriteId])
@@ -243,7 +250,7 @@ final class FirebaseAdapter: BackendService {
         favoriteId: String,
         completion: @escaping (String?) -> Void
     ) {
-        usersCollection
+        Firestore.firestore().collection("users")
             .document(userId)
             .updateData([
                 "favorites": FieldValue.arrayRemove([favoriteId])
@@ -256,7 +263,7 @@ final class FirebaseAdapter: BackendService {
         userId: String,
         completion: @escaping ([String], String?) -> Void
     ) {
-        usersCollection
+        Firestore.firestore().collection("users")
             .document(userId)
             .getDocument { snapshot, error in
                 
