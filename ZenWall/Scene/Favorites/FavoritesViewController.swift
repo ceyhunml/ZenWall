@@ -10,14 +10,23 @@ import UIKit
 class FavoritesViewController: BaseViewController {
     
     private lazy var collectionView: UICollectionView = {
-        let layout = FavoritesViewController.createLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: CompositionalLayoutFactory.makeGridLayout())
         cv.delegate = self
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsVerticalScrollIndicator = false
         cv.register(WallpaperCell.self, forCellWithReuseIdentifier: "WallpaperCell")
         return cv
+    }()
+    
+    private lazy var emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No favorite photos ❤️"
+        label.textColor = UIColor(white: 1, alpha: 0.6)
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
     }()
     
     private lazy var refreshControl: UIRefreshControl = {
@@ -33,45 +42,55 @@ class FavoritesViewController: BaseViewController {
         loadData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        //viewModel.getFavorites()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-        collectionView.setContentOffset(.zero, animated: false)
     }
     
     private func setupCollectionView() {
         title = "Favorites"
         navigationItem.largeTitleDisplayMode = .always
         view.addSubview(collectionView)
+        view.addSubview(emptyLabel)
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            emptyLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor)
         ])
     }
     
     func loadData() {
         viewModel.success = { [weak self] in
-            self?.collectionView.reloadData()
-            self?.refreshControl.endRefreshing()
+            guard let self else { return }
+
+            self.collectionView.reloadData()
+            self.refreshControl.endRefreshing()
+            self.updateEmptyState()
         }
+
         viewModel.error = { message in
             print("Error:", message)
         }
+
         viewModel.getFavorites()
     }
     
-    @objc func refreshData() {
+    @objc private func refreshData() {
         viewModel.getFavorites()
+    }
+    
+    private func updateEmptyState() {
+        let isEmpty = viewModel.favoritePhotos.isEmpty
+        emptyLabel.isHidden = !isEmpty
     }
     
     private func saveImage(photo: UnsplashPhoto) {
@@ -158,30 +177,5 @@ extension FavoritesViewController: UICollectionViewDataSource, UICollectionViewD
             sourceCell: cell
         )
         coordinator.start()
-    }
-}
-
-extension FavoritesViewController {
-    static func createLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { _, _ in
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.5),
-                heightDimension: .absolute(260)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-            
-            let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(260)
-                ),
-                subitems: [item]
-            )
-            
-            let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = .init(top: 0, leading: 8, bottom: 8, trailing: 8)
-            return section
-        }
     }
 }

@@ -31,7 +31,7 @@ final class CompositionalLayoutFactory {
         }
     }
     
-    // MARK: - Sections (HAMISI static!)
+    // MARK: - Sections
     private static func headerSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
