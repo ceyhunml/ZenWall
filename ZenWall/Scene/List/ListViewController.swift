@@ -10,8 +10,7 @@ import UIKit
 class ListViewController: BaseViewController {
     
     private lazy var collectionView: UICollectionView = {
-        let layout = ListViewController.createLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: CompositionalLayoutFactory.makeGridLayout())
         cv.delegate = self
         cv.dataSource = self
         cv.backgroundColor = .clear
@@ -165,30 +164,5 @@ extension ListViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         viewModel.pagination(index: indexPath.row)
-    }
-}
-
-extension ListViewController {
-    static func createLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { _, _ in
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.5),
-                heightDimension: .absolute(260)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-            
-            let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(260)
-                ),
-                subitems: [item]
-            )
-            
-            let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = .init(top: 0, leading: 8, bottom: 8, trailing: 8)
-            return section
-        }
     }
 }

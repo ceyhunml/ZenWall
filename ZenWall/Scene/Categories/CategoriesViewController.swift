@@ -11,7 +11,7 @@ final class CategoriesViewController: BaseViewController {
     
     // MARK: - UI
     private lazy var collectionView: UICollectionView = {
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: Self.createLayout())
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: CompositionalLayoutFactory.makeGridLayout())
         cv.backgroundColor = .clear
         cv.dataSource = self
         cv.delegate = self
@@ -72,29 +72,6 @@ final class CategoriesViewController: BaseViewController {
         
         viewModel.failure = { errorMsg in
             print("ERROR: \(errorMsg)")
-        }
-    }
-}
-
-extension CategoriesViewController {
-    static func createLayout() -> UICollectionViewLayout {
-        UICollectionViewCompositionalLayout { _, _ in
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.5),
-                heightDimension: .absolute(260)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-            
-            let groupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .absolute(260)
-            )
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-            
-            let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
-            return section
         }
     }
 }

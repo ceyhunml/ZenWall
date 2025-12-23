@@ -11,8 +11,7 @@ final class HomeViewController: BaseViewController {
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
-        let layout = HomeViewController.createLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: CompositionalLayoutFactory.makeHomeLayout())
         cv.delegate = self
         cv.dataSource = self
         cv.backgroundColor = .clear
