@@ -41,12 +41,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         return sv
     }()
     
-    private lazy var panToDismissGesture: UIPanGestureRecognizer = {
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePanToDismiss(_:)))
-        pan.delegate = self
-        return pan
-    }()
-    
     private lazy var wallpaperImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
@@ -249,7 +243,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     private func setupGestures() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleImageTap))
         wallpaperImageView.addGestureRecognizer(tap)
-        scrollView.addGestureRecognizer(panToDismissGesture)
     }
     
     @objc private func handleImageTap() {
@@ -258,39 +251,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
             return
         }
         toggleFullScreen()
-    }
-    
-    @objc private func handlePanToDismiss(_ gesture: UIPanGestureRecognizer) {
-        guard isFullScreen else { return }
-        guard scrollView.zoomScale <= 1.01 else { return }
-        
-        let translation = gesture.translation(in: view)
-        let progress = max(0, translation.y / view.bounds.height)
-        
-        switch gesture.state {
-        case .changed:
-            guard translation.y > 0 else { return }
-            
-            scrollView.transform = CGAffineTransform(translationX: 0, y: translation.y * 0.8)
-            
-            view.backgroundColor = UIColor.black.withAlphaComponent(1 - progress * 0.8)
-            
-        case .ended, .cancelled:
-            if progress > 0.20 {
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.scrollView.transform = .identity
-                }, completion: { _ in
-                    self.toggleFullScreen()
-                })
-            } else {
-                UIView.animate(withDuration: 0.25) {
-                    self.scrollView.transform = .identity
-                    self.view.backgroundColor = .black
-                }
-            }
-        default:
-            break
-        }
     }
     
     // MARK: - Fullscreen toggle
