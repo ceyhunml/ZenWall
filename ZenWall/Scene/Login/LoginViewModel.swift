@@ -12,8 +12,6 @@ class LoginViewModel {
     
     private let manager = AuthManager.shared
     
-    var prefillEmail: String?
-    var prefillPassword: String?
     var successForSignIn: ((String) -> Void)?
     var successForReset: (() -> Void)?
     var failure: ((String) -> Void)?

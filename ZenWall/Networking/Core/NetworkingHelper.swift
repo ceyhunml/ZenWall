@@ -15,10 +15,14 @@ final class NetworkingHelper {
     
     private let baseURL = "https://api.unsplash.com/"
     
-    private let accessKey = "Z09rq8KTi5ae-4L0D3sAJ8ygjImt6kxFsd1iVtLBhdI"
-    
-    var headers: HTTPHeaders {
-        ["Authorization": "Client-ID \(accessKey)"]
+    func withHeaders(
+        completion: @escaping (HTTPHeaders) -> Void
+    ) {
+        UnsplashConfig.shared.withAccessKey { key in
+            completion([
+                "Authorization": "Client-ID \(key)"
+            ])
+        }
     }
     
     func configureURL(endpoint: String) -> String {

@@ -79,7 +79,6 @@ class PasswordViewController: BaseViewController {
         navigationItem.backButtonTitle = ""
         navigationController?.navigationBar.tintColor = .white
         setupConstraints()
-        hideKeyboardWhenTappedAround()
     }
     
     // MARK: - Setup UI

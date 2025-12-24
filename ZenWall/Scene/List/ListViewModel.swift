@@ -24,6 +24,7 @@ final class ListViewModel {
     var error: ((String) -> Void)?
     
     private let manager = TopicsManager()
+    private let favoritesManager = FavoritesManager.shared
     
     func fetchImages(page: Int = 1) {
         manager.getTopicPhotos(topicSlug: selectedTopic, page: page) { data, error in
@@ -33,6 +34,19 @@ final class ListViewModel {
                 self.photos.append(contentsOf: data)
                 self.success?()
             }
+        }
+    }
+    
+    func isFavorite(photoId: String) -> Bool {
+        favoritesManager.isFavorite(id: photoId)
+    }
+    
+    func toggleFavorite(
+        photoId: String,
+        completion: @escaping (Bool) -> Void
+    ) {
+        favoritesManager.toggleFavorite(id: photoId) { _ in
+            completion(true)
         }
     }
     

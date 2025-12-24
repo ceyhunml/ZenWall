@@ -9,35 +9,46 @@ import Foundation
 
 final class HomeViewModel {
     
-    // MARK: - Properties
-    var photos: [UnsplashPhoto] = []
+    // MARK: - State
+    private(set) var photos: [UnsplashPhoto] = []
+    private let favoritesManager = FavoritesManager.shared
+    
     var photoOfDay: UnsplashPhoto?
     var currentQuery: String?
     var currentPage = 1
-    var onPhotoSelected: ((UnsplashPhoto) -> Void)?
     
-    init(onPhotoSelected: ((UnsplashPhoto) -> Void)? = nil) {
-        self.onPhotoSelected = onPhotoSelected
-    }
-    
-    required init(onPhotoSelected: @escaping ((String) -> Void)) {
-        onPhotoSelected(String())
-    }
-    
+    // MARK: - Callbacks
     var success: (() -> Void)?
     var error: ((String) -> Void)?
     
+    // MARK: - Managers
     private let randomManager = RandomPhotosManager()
     private let searchManager = SearchPhotosManager()
     
+    // MARK: - Favorites
+    
+    func isFavorite(photoId: String) -> Bool {
+        favoritesManager.isFavorite(id: photoId)
+    }
+    
+    func toggleFavorite(
+        photoId: String,
+        completion: @escaping (Bool) -> Void
+    ) {
+        favoritesManager.toggleFavorite(id: photoId) { _ in
+            completion(true)
+        }
+    }
+    
     // MARK: - Random Photos
+    
     func fetchRandomPhotos() {
-        
         randomManager.getRandomPhotos(count: 20) { [weak self] data, error in
             guard let self else { return }
+            
             if let data {
                 self.photos.append(contentsOf: data)
-                if ((self.photoOfDay) == nil) {
+                if self.photoOfDay == nil {
                     self.photoOfDay = data.randomElement()
                 }
                 self.success?()
@@ -47,7 +58,8 @@ final class HomeViewModel {
         }
     }
     
-     //MARK: - Search Photos
+    // MARK: - Search
+    
     func searchPhotos(query: String, page: Int = 1) {
         currentQuery = query
         
@@ -69,6 +81,7 @@ final class HomeViewModel {
     }
     
     // MARK: - Pagination
+    
     func pagination(index: Int) {
         guard index == photos.count - 2 else { return }
         
@@ -81,10 +94,12 @@ final class HomeViewModel {
     }
     
     // MARK: - Refresh
+    
     func refresh() {
         currentQuery = nil
         currentPage = 1
         photos.removeAll()
+        success?()
         fetchRandomPhotos()
     }
 }

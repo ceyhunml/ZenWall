@@ -141,6 +141,16 @@ final class LoginViewController: BaseViewController {
         return btn
     }()
     
+    private lazy var scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.alwaysBounceVertical = true
+        sv.showsVerticalScrollIndicator = false
+        sv.keyboardDismissMode = .interactive
+        return sv
+    }()
+    
+    private let contentView = UIView()
+    
     let viewModel = LoginViewModel()
     let builder = UserBuilder()
     
@@ -153,14 +163,12 @@ final class LoginViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        if let email = viewModel.prefillEmail {
-            emailField.text = email
-        }
-        
-        if let password = viewModel.prefillPassword {
-            passwordField.text = password
-        }
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     private func closureHandler() {
@@ -185,6 +193,8 @@ final class LoginViewController: BaseViewController {
     
     // MARK: - Layout
     private func setupUI() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
         
         [
             titleLabel,
@@ -197,8 +207,10 @@ final class LoginViewController: BaseViewController {
             footerLabel, signupButton
         ].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
+            contentView.addSubview($0)
         }
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         navigationItem.backButtonTitle = ""
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         signupButton.addTarget(self, action: #selector(signup), for: .touchUpInside)
@@ -207,46 +219,60 @@ final class LoginViewController: BaseViewController {
         
         NSLayoutConstraint.activate([
             
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 120),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            
+            titleLabel.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: view.bounds.height * 0.05),
+            titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             emailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 40),
-            emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             emailField.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 8),
-            emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            emailField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            emailField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            emailField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             emailField.heightAnchor.constraint(equalToConstant: 54),
             
             passwordLabel.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
-            passwordLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            passwordLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             
             passwordField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 8),
-            passwordField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            passwordField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            passwordField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             passwordField.heightAnchor.constraint(equalToConstant: 54),
             
             loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 32),
-            loginButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            loginButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             loginButton.heightAnchor.constraint(equalToConstant: 54),
             
             dividerLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 30),
-            dividerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dividerLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             googleButton.topAnchor.constraint(equalTo: dividerLabel.bottomAnchor, constant: 18),
-            googleButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            googleButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            googleButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            googleButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             googleButton.heightAnchor.constraint(equalToConstant: 54),
             
             forgotPasswordButton.topAnchor.constraint(equalTo: googleButton.bottomAnchor, constant: 26),
-            forgotPasswordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            forgotPasswordButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             footerLabel.topAnchor.constraint(equalTo: forgotPasswordButton.bottomAnchor, constant: 50),
-            footerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -35),
+            footerLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor, constant: -35),
             
             signupButton.centerYAnchor.constraint(equalTo: footerLabel.centerYAnchor),
-            signupButton.leadingAnchor.constraint(equalTo: footerLabel.trailingAnchor, constant: 6)
+            signupButton.leadingAnchor.constraint(equalTo: footerLabel.trailingAnchor, constant: 6),
+            
+            footerLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
         ])
     }
     

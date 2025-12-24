@@ -8,19 +8,11 @@
 import UIKit
 import StoreKit
 import SafariServices
+import PhotosUI
 
 final class ProfileViewController: BaseViewController {
     
     // MARK: - UI Elements
-    private lazy var titleLabel: UILabel = {
-        let lbl = UILabel()
-        lbl.text = "Profile"
-        lbl.font = .systemFont(ofSize: 20, weight: .bold)
-        lbl.textColor = UIColor(red: 0.91, green: 0.88, blue: 0.84, alpha: 1)
-        lbl.textAlignment = .center
-        return lbl
-    }()
-    
     private lazy var avatarImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
@@ -63,21 +55,27 @@ final class ProfileViewController: BaseViewController {
     private lazy var versionLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "ZenWall v1.0.0"
-        lbl.textColor = UIColor(white: 0.7, alpha: 1) // boz rəng
+        lbl.textColor = UIColor(white: 0.7, alpha: 1)
         lbl.font = .systemFont(ofSize: 14, weight: .regular)
         lbl.textAlignment = .center
         return lbl
     }()
     
-    private let imagePicker = UIImagePickerController()
-    private let viewModel = ProfileViewModel()
+    private lazy var scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.alwaysBounceVertical = true
+        sv.showsVerticalScrollIndicator = false
+        sv.keyboardDismissMode = .interactive
+        return sv
+    }()
     
+    private let contentView = UIView()
+    private let viewModel = ProfileViewModel()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupAvatarTap()
-        setupPicker()
         layoutUI()
         bindViewModel()
         viewModel.loadUser()
@@ -150,11 +148,6 @@ final class ProfileViewController: BaseViewController {
         avatarImageView.addGestureRecognizer(tap)
     }
     
-    private func setupPicker() {
-        imagePicker.delegate = self
-        imagePicker.allowsEditing = true
-    }
-    
     
     // MARK: - Bind ViewModel
     private func bindViewModel() {
@@ -181,12 +174,17 @@ final class ProfileViewController: BaseViewController {
     
     // MARK: - Layout UI
     private func layoutUI() {
-        view.addSubview(titleLabel)
-        view.addSubview(avatarImageView)
-        view.addSubview(editPhotoButton)
-        view.addSubview(nameLabel)
-        view.addSubview(listContainer)
-        view.addSubview(versionLabel)
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        [
+            avatarImageView,
+            editPhotoButton,
+            nameLabel,
+            listContainer,
+            versionLabel
+        ].forEach { contentView.addSubview($0) }
         
         [
             makeRow(icon: "questionmark.circle", title: "Help & Support", action: #selector(openSupport)),
@@ -194,10 +192,12 @@ final class ProfileViewController: BaseViewController {
             makeRow(icon: "lock", title: "Privacy Policy", action: #selector(openPrivacyPolicy)),
             makeRow(icon: "arrow.backward.square", title: "Sign Out",
                     isDestructive: true, action: #selector(signOutTapped))
-        ]
-            .forEach { listContainer.addArrangedSubview($0) }
+        ].forEach { listContainer.addArrangedSubview($0) }
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        title = "Profile"
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         editPhotoButton.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -205,53 +205,104 @@ final class ProfileViewController: BaseViewController {
         versionLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            avatarImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 24),
-            avatarImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            
+            avatarImageView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 24),
+            avatarImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             avatarImageView.widthAnchor.constraint(equalToConstant: 128),
             avatarImageView.heightAnchor.constraint(equalToConstant: 128),
             
             editPhotoButton.widthAnchor.constraint(equalToConstant: 36),
             editPhotoButton.heightAnchor.constraint(equalToConstant: 36),
-            
             editPhotoButton.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 4),
             editPhotoButton.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 4),
             
             nameLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 12),
-            nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            nameLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             listContainer.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 32),
-            listContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            listContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            listContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            listContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
             versionLabel.topAnchor.constraint(equalTo: listContainer.bottomAnchor, constant: 24),
-            versionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            versionLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            versionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
         ])
     }
     
     
     // MARK: - Sign Out
     @objc private func signOutTapped() {
-        let alert = UIAlertController(title: "Signing out",
-                                      message: "Are you sure?",
-                                      preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { _ in
+        showDestructiveAlert(
+            title: "Signing out",
+            message: "Are you sure?",
+            destructiveTitle: "Yes"
+        ) {
             self.viewModel.signOut()
             
-            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
-               let window = sceneDelegate.window {
-                
-                UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
-                    window.rootViewController = LoginViewController()
-                })
-            }
+            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let delegate = scene.delegate as? SceneDelegate,
+                  let window = delegate.window else { return }
+            
+            UIView.transition(with: window,
+                              duration: 0.5,
+                              options: .transitionFlipFromRight,
+                              animations: {
+                window.rootViewController = UINavigationController(rootViewController: LoginViewController())
+                window.makeKeyAndVisible()
+            })
+        }
+    }
+    
+    private func openCamera() {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else { return }
+        
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    private func openPhotoLibrary() {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 1
+        config.filter = .images
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    @objc private func selectImage() {
+        var actions: [(String, UIAlertAction.Style, () -> Void)] = []
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            actions.append(("Camera", .default, { [weak self] in
+                self?.openCamera()
+            }))
+        }
+        
+        actions.append(("Gallery", .default, { [weak self] in
+            self?.openPhotoLibrary()
         }))
         
-        present(alert, animated: true)
+        showActionSheet(
+            title: "Profile Photo",
+            message: "Choose a source",
+            actions: actions
+        )
     }
     
     @objc private func openSupport() {
@@ -275,28 +326,6 @@ final class ProfileViewController: BaseViewController {
 }
 
 extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    @objc private func selectImage() {
-        let sheet = UIAlertController(title: "Profile Photo",
-                                      message: "Choose a source",
-                                      preferredStyle: .actionSheet)
-        
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            sheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
-                self.imagePicker.sourceType = .camera
-                self.present(self.imagePicker, animated: true)
-            }))
-        }
-        
-        sheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
-            self.imagePicker.sourceType = .photoLibrary
-            self.present(self.imagePicker, animated: true)
-        }))
-        
-        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        present(sheet, animated: true)
-    }
     
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -327,5 +356,37 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
+    }
+}
+
+extension ProfileViewController: PHPickerViewControllerDelegate {
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        guard let itemProvider = results.first?.itemProvider,
+              itemProvider.canLoadObject(ofClass: UIImage.self)
+        else { return }
+        
+        itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, _ in
+            guard let self,
+                  let image = image as? UIImage,
+                  let data = image.jpegData(compressionQuality: 0.8),
+                  let uid = UserDefaults.standard.string(forKey: "userId")
+            else { return }
+            
+            AuthManager.shared.uploadProfileImage(uid: uid, imageData: data) { url, error in
+                if let error { print(error); return }
+                guard let url else { return }
+                
+                AuthManager.shared.updateUserPhotoURL(uid: uid, photoURL: url) { error in
+                    if let error { print(error); return }
+                    
+                    DispatchQueue.main.async {
+                        self.avatarImageView.image = image
+                    }
+                }
+            }
+        }
     }
 }

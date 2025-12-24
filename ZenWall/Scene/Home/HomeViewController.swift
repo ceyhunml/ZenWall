@@ -11,8 +11,7 @@ final class HomeViewController: BaseViewController {
     
     // MARK: - UI Elements
     private lazy var collectionView: UICollectionView = {
-        let layout = HomeViewController.createLayout()
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: CompositionalLayoutFactory.makeHomeLayout())
         cv.delegate = self
         cv.dataSource = self
         cv.backgroundColor = .clear
@@ -47,7 +46,6 @@ final class HomeViewController: BaseViewController {
         setupCollectionView()
         bindViewModel()
         viewModel.fetchRandomPhotos()
-        hideKeyboardWhenTappedAround()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +78,41 @@ final class HomeViewController: BaseViewController {
             headerCell.resetSearch()
         }
         viewModel.refresh()
+    }
+    
+    private func saveImage(photo: UnsplashPhoto) {
+        guard let url = photo.urls?.full
+        else { return }
+        
+        UIImage.downloadAndSave(from: url) { [weak self] result in
+            guard let self else { return }
+            
+            let (title, message): (String, String)
+            
+            switch result {
+            case .success:
+                title = "Success"
+                message = "Photo added to your library!"
+                
+            case .denied:
+                title = "Permission Denied"
+                message = "Please allow access to your Photo Library."
+                
+            case .invalidURL:
+                title = "Invalid URL"
+                message = "Something went wrong. The image URL is invalid."
+                
+            case .downloadFailed:
+                title = "Download Failed"
+                message = "Could not download photo. Please try again."
+                
+            case .saveFailed:
+                title = "Error"
+                message = "Failed to save image to your gallery."
+            }
+            
+            self.alertFor(title: title, message: message)
+        }
     }
     
     // MARK: - Binding
@@ -132,11 +165,32 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             return cell
             
         default:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "WallpaperCell", for: indexPath) as! WallpaperCell
-            if indexPath.row < viewModel.photos.count,
-               let url = viewModel.photos[indexPath.row].urls?.raw {
-                cell.configure(imageURL: url)
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "WallpaperCell",
+                for: indexPath
+            ) as! WallpaperCell
+            
+            let photo = viewModel.photos[indexPath.row]
+            let photoId = photo.id ?? ""
+            let imageURL = photo.urls?.regular ?? ""
+            
+            let isFavorite = viewModel.isFavorite(photoId: photoId)
+            
+            cell.configure(
+                imageURL: imageURL,
+                photoId: photoId,
+                isFavorite: isFavorite
+            )
+            
+            cell.onToggleFavorite = { [weak self] photoId, _, completion in
+                self?.viewModel.toggleFavorite(photoId: photoId) { success in
+                    completion(success)
+                }
             }
+            cell.onDownload = { _ in
+                self.saveImage(photo: photo)
+            }
+            
             return cell
         }
     }
@@ -164,9 +218,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let photoOfDay = viewModel.photoOfDay else { return }
+        guard let cell = collectionView.cellForItem(at: indexPath),
+              let photoOfDay = viewModel.photoOfDay else { return }
         if indexPath.section != 0 {
-            let coordinator = WallpaperDetailsCoordinator(navigationController: navigationController ?? UINavigationController(), photo: indexPath.section == 1 ? photoOfDay : viewModel.photos[indexPath.row])
+            let coordinator = WallpaperDetailsCoordinator(
+                navigationController: navigationController!,
+                photo: indexPath.section == 1 ? photoOfDay : viewModel.photos[indexPath.row],
+                sourceCell: cell
+            )
             coordinator.start()
         }
     }
@@ -177,72 +236,5 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         view.endEditing(true)
-    }
-}
-
-extension HomeViewController {
-    static func createLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            switch sectionIndex {
-                
-            case 0:
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .estimated(120)
-                )
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                
-                let group = NSCollectionLayoutGroup.vertical(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1.0),
-                        heightDimension: .estimated(120)
-                    ),
-                    subitems: [item]
-                )
-                
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 8, leading: 16, bottom: 8, trailing: 16)
-                return section
-                
-            case 1:
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(220)
-                )
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                
-                let group = NSCollectionLayoutGroup.vertical(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1.0),
-                        heightDimension: .absolute(220)
-                    ),
-                    subitems: [item]
-                )
-                
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 0, leading: 16, bottom: 16, trailing: 16)
-                return section
-                
-            default:
-                let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(0.5),
-                    heightDimension: .absolute(260)
-                )
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                item.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-                
-                let group = NSCollectionLayoutGroup.horizontal(
-                    layoutSize: NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1.0),
-                        heightDimension: .absolute(260)
-                    ),
-                    subitems: [item]
-                )
-                
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = .init(top: 0, leading: 8, bottom: 8, trailing: 8)
-                return section
-            }
-        }
     }
 }

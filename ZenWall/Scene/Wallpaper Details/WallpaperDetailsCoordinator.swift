@@ -10,18 +10,30 @@ import UIKit
 
 class WallpaperDetailsCoordinator: Coordinator {
     
-    var photo: UnsplashPhoto
     var navigationController: UINavigationController
+    private let photo: UnsplashPhoto
+    private let sourceCell: UICollectionViewCell
     
-    init(navigationController: UINavigationController, photo: UnsplashPhoto) {
+    init(
+        navigationController: UINavigationController,
+        photo: UnsplashPhoto,
+        sourceCell: UICollectionViewCell
+    ) {
         self.navigationController = navigationController
         self.photo = photo
+        self.sourceCell = sourceCell
     }
     
     func start() {
         let detailVM = WallpaperDetailsViewModel(photo: photo)
         let detailVC = WallpaperDetailsViewController(viewModel: detailVM)
+        
         detailVC.hidesBottomBarWhenPushed = true
-        navigationController.show(detailVC, sender: true)
+        detailVC.preferredTransition = .zoom(
+            sourceViewProvider: {context in 
+                self.sourceCell.contentView
+            }
+        )
+        navigationController.pushViewController(detailVC, animated: true)
     }
 }

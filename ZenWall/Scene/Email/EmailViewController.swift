@@ -77,8 +77,7 @@ class EmailViewController: BaseViewController {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""
         navigationController?.navigationBar.tintColor = .white
-        setupConstraints()        
-        hideKeyboardWhenTappedAround()
+        setupConstraints()
     }
     
     // MARK: - Setup UI

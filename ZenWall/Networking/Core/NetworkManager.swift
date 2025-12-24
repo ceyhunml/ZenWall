@@ -21,18 +21,21 @@ final class NetworkManager {
         encoding: ParameterEncoding = URLEncoding.default,
         completion: @escaping (T?, String?) -> Void
     ) {
-
-        AF.request(url,
-                   method: method,
-                   parameters: parameters,
-                   encoding: encoding,
-                   headers: NetworkingHelper.shared.headers)
-        .responseDecodable(of: T.self) { response in
-            switch response.result {
-            case .success(let data):
-                completion(data, nil)
-            case .failure(let error):
-                completion(nil, error.localizedDescription)
+        
+        NetworkingHelper.shared.withHeaders { headers in
+            AF.request(
+                url,
+                method: method,
+                parameters: parameters,
+                headers: headers
+            )
+            .responseDecodable(of: T.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completion(data, nil)
+                case .failure(let error):
+                    completion(nil, error.localizedDescription)
+                }
             }
         }
     }

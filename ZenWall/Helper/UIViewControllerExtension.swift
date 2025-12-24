@@ -53,13 +53,50 @@ extension UIViewController {
         navigationController?.navigationBar.tintColor = .white
     }
     
-    func alertFor(title: String, message: String) {
+    func alertFor(title: String,
+                  message: String) {
         DispatchQueue.main.async {
             let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: .default)
             alertController.addAction(okAction)
             self.present(alertController, animated: true)
         }
+    }
+    
+    func showDestructiveAlert(title: String,
+                              message: String,
+                              destructiveTitle: String = "Yes",
+                              onConfirm: @escaping () -> Void) {
+        
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: destructiveTitle,
+                                      style: .destructive,
+                                      handler: { _ in
+            onConfirm()
+        }))
+        
+        present(alert, animated: true)
+    }
+    
+    func showActionSheet(title: String?,
+                         message: String?,
+                         actions: [(title: String, style: UIAlertAction.Style, handler: () -> Void)],
+                         cancelTitle: String = "Cancel") {
+        let sheet = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        
+        actions.forEach { item in
+            sheet.addAction(UIAlertAction(title: item.title, style: item.style, handler: { _ in
+                item.handler()
+            }))
+        }
+        
+        sheet.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+        present(sheet, animated: true)
     }
     
     func hideKeyboardWhenTappedAround() {
@@ -70,5 +107,30 @@ extension UIViewController {
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    func hideNavBarButtons() {
+        navBarButtonViews().forEach { $0.alpha = 0 }
+    }
+    
+    func showNavBarButtons() {
+        let buttons = navBarButtonViews()
+        buttons.forEach { $0.alpha = 0 }
+        
+        UIView.animate(
+            withDuration: 0.25,
+            delay: 0,
+            options: [.curveEaseOut]
+        ) {
+            buttons.forEach { $0.alpha = 1 }
+        }
+    }
+    
+    func navBarButtonViews() -> [UIView] {
+        guard let navBar = navigationController?.navigationBar else { return [] }
+        
+        return navBar.subviews.filter {
+            String(describing: type(of: $0)).contains("BarButton")
+        }
     }
 }

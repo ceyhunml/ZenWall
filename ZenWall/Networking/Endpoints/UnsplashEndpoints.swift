@@ -9,6 +9,7 @@ import Foundation
 
 enum UnsplashEndpoint {
     case random(count: Int)
+    case getPhoto(id: String)
     case search(query: String, page: Int)
     case topics
     case topicPhotos(slug: String, page: Int)
@@ -27,6 +28,9 @@ enum UnsplashEndpoint {
             
         case .topicPhotos(let slug, let page):
             return NetworkingHelper.shared.configureURL(endpoint: "topics/\(slug)/photos?page=\(page)&per_page=20")
+            
+        case .getPhoto(id: let id):
+            return NetworkingHelper.shared.configureURL(endpoint: "photos/\(id)")
         }
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelegate {
-
+    
     // MARK: - UI Elements
     private lazy var backgroundImageView: UIImageView = {
         let iv = UIImageView()
@@ -33,17 +33,12 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         sv.maximumZoomScale = 3.0
         sv.showsVerticalScrollIndicator = false
         sv.showsHorizontalScrollIndicator = false
-        sv.layer.masksToBounds = false
+        sv.clipsToBounds = true
+        sv.layer.masksToBounds = true
         sv.isOpaque = true
         sv.backgroundColor = .clear
         sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
-    }()
-    
-    private lazy var panToDismissGesture: UIPanGestureRecognizer = {
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePanToDismiss(_:)))
-        pan.delegate = self
-        return pan
     }()
     
     private lazy var wallpaperImageView: UIImageView = {
@@ -106,6 +101,7 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Properties
     private let viewModel: WallpaperDetailsViewModel
     private var isFullScreen = false
+    private var shouldShowNavButtons = false
     
     // MARK: - Init
     init(viewModel: WallpaperDetailsViewModel) {
@@ -128,16 +124,21 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         applyTransparentNavBar()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         setupDefaultBar()
+        navigationItem.rightBarButtonItem = nil
+        shouldShowNavButtons = false
     }
     
     // MARK: - Setup
     private func setupUI() {
         view.backgroundColor = .black
+        setupFavoriteButton()
         fullButton.addTarget(self, action: #selector(saveFullImage), for: .touchUpInside)
         lowButton.addTarget(self, action: #selector(saveLowImage), for: .touchUpInside)
         
@@ -208,18 +209,40 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         ])
     }
     
+    private func setupFavoriteButton() {
+        let button = UIBarButtonItem(
+            image: UIImage(systemName: "heart"),
+            style: .plain,
+            target: self,
+            action: #selector(favoriteTapped)
+        )
+        button.tintColor = .white
+        navigationItem.rightBarButtonItem = button
+    }
+    
+    @objc private func favoriteTapped() {
+        viewModel.toggleFavorite()
+    }
+    
     private func setupBindings() {
         viewModel.onImageURL = { [weak self] url in
             guard let self, let url else { return }
             self.wallpaperImageView.setUnsplashImage(url)
             self.backgroundImageView.setUnsplashImage(url)
         }
+        viewModel.onFavoriteChanged = { [weak self] isFavorite in
+            self?.updateFavoriteIcon(isFavorite)
+        }
+    }
+    
+    private func updateFavoriteIcon(_ isFavorite: Bool) {
+        let name = isFavorite ? "heart.fill" : "heart"
+        navigationItem.rightBarButtonItem?.image = UIImage(systemName: name)
     }
     
     private func setupGestures() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleImageTap))
         wallpaperImageView.addGestureRecognizer(tap)
-        scrollView.addGestureRecognizer(panToDismissGesture)
     }
     
     @objc private func handleImageTap() {
@@ -228,39 +251,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
             return
         }
         toggleFullScreen()
-    }
-    
-    @objc private func handlePanToDismiss(_ gesture: UIPanGestureRecognizer) {
-        guard isFullScreen else { return }
-        guard scrollView.zoomScale <= 1.01 else { return }
-        
-        let translation = gesture.translation(in: view)
-        let progress = max(0, translation.y / view.bounds.height)
-        
-        switch gesture.state {
-        case .changed:
-            guard translation.y > 0 else { return }
-            
-            scrollView.transform = CGAffineTransform(translationX: 0, y: translation.y * 0.8)
-            
-            view.backgroundColor = UIColor.black.withAlphaComponent(1 - progress * 0.8)
-            
-        case .ended, .cancelled:
-            if progress > 0.20 {
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.scrollView.transform = .identity
-                }, completion: { _ in
-                    self.toggleFullScreen()
-                })
-            } else {
-                UIView.animate(withDuration: 0.25) {
-                    self.scrollView.transform = .identity
-                    self.view.backgroundColor = .black
-                }
-            }
-        default:
-            break
-        }
     }
     
     // MARK: - Fullscreen toggle
