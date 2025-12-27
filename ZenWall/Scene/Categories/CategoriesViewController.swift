@@ -15,6 +15,7 @@ final class CategoriesViewController: BaseViewController {
         cv.backgroundColor = .clear
         cv.dataSource = self
         cv.delegate = self
+        cv.translatesAutoresizingMaskIntoConstraints = false
         cv.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
         return cv
     }()
@@ -34,21 +35,17 @@ final class CategoriesViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        setupNavigationBar()
-        bindViewModel()
-        viewModel.fetchNewCategories()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setupNavigationBar()
     }
     
     // MARK: - UI Setup
-    private func setupUI() {
+    override func layoutUI() {
+        title = "Categories"
+        navigationController?.navigationBar.prefersLargeTitles = true
         view.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -58,14 +55,8 @@ final class CategoriesViewController: BaseViewController {
         ])
     }
     
-    // MARK: - NavigationBar
-    private func setupNavigationBar() {
-        title = "Categories"
-        navigationController?.navigationBar.prefersLargeTitles = true
-    }
-    
     // MARK: - Bindings
-    private func bindViewModel() {
+    override func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
         }
@@ -73,6 +64,7 @@ final class CategoriesViewController: BaseViewController {
         viewModel.failure = { errorMsg in
             print("ERROR: \(errorMsg)")
         }
+        viewModel.fetchNewCategories()
     }
 }
 

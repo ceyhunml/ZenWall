@@ -75,12 +75,7 @@ final class ProfileViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupAvatarTap()
-        layoutUI()
-        bindViewModel()
-        viewModel.loadUser()
     }
-    
     
     // MARK: - Row Builder
     private func makeRow(icon: String, title: String, isDestructive: Bool = false, action: Selector? = nil) -> UIView {
@@ -89,25 +84,19 @@ final class ProfileViewController: BaseViewController {
         container.heightAnchor.constraint(equalToConstant: 52).isActive = true
         
         let iconContainer = UIView()
-        iconContainer.backgroundColor = isDestructive
-        ? UIColor.systemRed.withAlphaComponent(0.18)
-        : UIColor(red: 0.64, green: 0.73, blue: 0.66, alpha: 1).withAlphaComponent(0.18)
+        iconContainer.backgroundColor = isDestructive ? UIColor.systemRed.withAlphaComponent(0.18) : UIColor(red: 0.64, green: 0.73, blue: 0.66, alpha: 1).withAlphaComponent(0.18)
         
         iconContainer.layer.cornerRadius = 8
         iconContainer.clipsToBounds = true
         
         let iconView = UIImageView(image: UIImage(systemName: icon))
-        iconView.tintColor = isDestructive
-        ? .systemRed
-        : UIColor(red: 0.64, green: 0.73, blue: 0.66, alpha: 1)
+        iconView.tintColor = isDestructive ? .systemRed : UIColor(red: 0.64, green: 0.73, blue: 0.66, alpha: 1)
         
         iconView.contentMode = .scaleAspectFit
         
         let titleLabel = UILabel()
         titleLabel.text = title
-        titleLabel.textColor = isDestructive
-        ? .systemRed
-        : UIColor(red: 0.91, green: 0.88, blue: 0.84, alpha: 1)
+        titleLabel.textColor = isDestructive ? .systemRed : UIColor(red: 0.91, green: 0.88, blue: 0.84, alpha: 1)
         titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
         
         container.addSubview(iconContainer)
@@ -141,17 +130,14 @@ final class ProfileViewController: BaseViewController {
         return container
     }
     
-    
     // MARK: - Tap Avatar → Picker
     private func setupAvatarTap() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(selectImage))
         avatarImageView.addGestureRecognizer(tap)
     }
     
-    
     // MARK: - Bind ViewModel
-    private func bindViewModel() {
-        
+    override func bindViewModel() {
         viewModel.onDataLoaded = { [weak self] fullname, email, photoURL in
             guard let self else { return }
             
@@ -169,11 +155,11 @@ final class ProfileViewController: BaseViewController {
         viewModel.onError = { error in
             print("ERROR:", error)
         }
+        viewModel.loadUser()
     }
     
-    
     // MARK: - Layout UI
-    private func layoutUI() {
+    override func layoutUI() {
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -239,8 +225,9 @@ final class ProfileViewController: BaseViewController {
             versionLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             versionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
         ])
+        
+        setupAvatarTap()
     }
-    
     
     // MARK: - Sign Out
     @objc private func signOutTapped() {
@@ -267,7 +254,6 @@ final class ProfileViewController: BaseViewController {
     
     private func openCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else { return }
-        
         let picker = UIImagePickerController()
         picker.sourceType = .camera
         picker.allowsEditing = true
@@ -306,8 +292,7 @@ final class ProfileViewController: BaseViewController {
     }
     
     @objc private func openSupport() {
-        let email = "support@zenwall.app"
-        if let url = URL(string: "mailto:\(email)") {
+        if let url = Constants.shared.supportURL {
             UIApplication.shared.open(url)
         }
     }
@@ -319,7 +304,7 @@ final class ProfileViewController: BaseViewController {
     }
     
     @objc private func openPrivacyPolicy() {
-        guard let url = URL(string: "https://raw.githubusercontent.com/ceyhunml/zenwall-legal/refs/heads/main/privacy-policy.html") else { return }
+        guard let url = Constants.shared.privacyAndPolicyURL else { return }
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
     }

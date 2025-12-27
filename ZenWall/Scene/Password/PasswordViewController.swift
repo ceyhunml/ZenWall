@@ -76,21 +76,19 @@ class PasswordViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonTitle = ""
-        navigationController?.navigationBar.tintColor = .white
-        setupConstraints()
     }
     
     // MARK: - Setup UI
-    private func setupConstraints() {
+    override func layoutUI() {
         title = "Step 3 of 3"
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         [passwordTitleLabel, subtitleLabel,
          fieldHeaderLabel, passwordField, nextButton]
             .forEach { sub in
                 sub.translatesAutoresizingMaskIntoConstraints = false
                 view.addSubview(sub)
             }
-        
         NSLayoutConstraint.activate([
             
             passwordTitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),

@@ -75,14 +75,13 @@ class EmailViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.backButtonTitle = ""
-        navigationController?.navigationBar.tintColor = .white
-        setupConstraints()
     }
     
     // MARK: - Setup UI
-    private func setupConstraints() {
+    override func layoutUI() {
         title = "Step 1 of 3"
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         [emailTitleLabel, subtitleLabel,
          fieldHeaderLabel, emailField, nextButton]
             .forEach { sub in

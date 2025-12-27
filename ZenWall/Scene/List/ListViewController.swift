@@ -15,6 +15,7 @@ class ListViewController: BaseViewController {
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsVerticalScrollIndicator = false
+        cv.translatesAutoresizingMaskIntoConstraints = false
         cv.register(WallpaperCell.self, forCellWithReuseIdentifier: "WallpaperCell")
         return cv
     }()
@@ -37,23 +38,19 @@ class ListViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.largeTitleDisplayMode = .never
-        setupDefaultBar()
-        setupCollectionView()
-        bindViewModel()
-        viewModel.fetchImages()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
     
-    private func setupCollectionView() {
+    override func layoutUI() {
+        setupDefaultBar()
         title = viewModel.selectedTopicForUI
+        navigationItem.largeTitleDisplayMode = .never
         view.addSubview(collectionView)
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -101,7 +98,7 @@ class ListViewController: BaseViewController {
         }
     }
     
-    private func bindViewModel() {
+    override func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
             self?.refreshControl.endRefreshing()
@@ -110,6 +107,7 @@ class ListViewController: BaseViewController {
         viewModel.error = { errorMessage in
             print("Error: \(errorMessage)")
         }
+        viewModel.fetchImages()
     }
 }
 

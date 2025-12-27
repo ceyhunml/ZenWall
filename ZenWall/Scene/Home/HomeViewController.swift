@@ -16,6 +16,7 @@ final class HomeViewController: BaseViewController {
         cv.dataSource = self
         cv.backgroundColor = .clear
         cv.showsVerticalScrollIndicator = false
+        cv.translatesAutoresizingMaskIntoConstraints = false
         cv.register(HeaderCell.self, forCellWithReuseIdentifier: "HeaderCell")
         cv.register(WallpaperOfDayCell.self, forCellWithReuseIdentifier: "WallpaperOfDayCell")
         cv.register(WallpaperCell.self, forCellWithReuseIdentifier: "WallpaperCell")
@@ -42,10 +43,6 @@ final class HomeViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupGradientBackground()
-        setupCollectionView()
-        bindViewModel()
-        viewModel.fetchRandomPhotos()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,11 +56,11 @@ final class HomeViewController: BaseViewController {
     }
     
     // MARK: - Setup
-    private func setupCollectionView() {
+    override func layoutUI() {
+        setupGradientBackground()
         view.addSubview(collectionView)
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -116,7 +113,7 @@ final class HomeViewController: BaseViewController {
     }
     
     // MARK: - Binding
-    private func bindViewModel() {
+    override func bindViewModel() {
         viewModel.success = { [weak self] in
             self?.collectionView.reloadData()
             self?.refreshControl.endRefreshing()
@@ -125,6 +122,7 @@ final class HomeViewController: BaseViewController {
         viewModel.error = { errorMessage in
             print("Error: \(errorMessage)")
         }
+        viewModel.fetchRandomPhotos()
     }
 }
 
