@@ -8,5 +8,5 @@
 import Foundation
 
 protocol SearchPhotosUseCase {
-    func searchPhotos(query: String, page: Int, completion: @escaping (SearchResponse?, String?) -> Void)
+    func searchPhotos(query: String, page: Int) async throws -> SearchResponse
 }
