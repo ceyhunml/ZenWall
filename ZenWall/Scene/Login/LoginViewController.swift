@@ -146,10 +146,15 @@ final class LoginViewController: BaseViewController {
         sv.alwaysBounceVertical = true
         sv.showsVerticalScrollIndicator = false
         sv.keyboardDismissMode = .interactive
+        sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
     
-    private let contentView = UIView()
+    private lazy var contentView: UIView = {
+        let cv = UIView()
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        return cv
+    }()
     
     let viewModel = LoginViewModel()
     let builder = UserBuilder()
@@ -157,8 +162,6 @@ final class LoginViewController: BaseViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        closureHandler()
-        setupUI()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -171,7 +174,7 @@ final class LoginViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
-    private func closureHandler() {
+    override func bindViewModel() {
         viewModel.successForReset = {
             self.alertFor(title: "Email Sent!", message: "Check your Inbox!")
         }
@@ -192,25 +195,14 @@ final class LoginViewController: BaseViewController {
     }
     
     // MARK: - Layout
-    private func setupUI() {
+    override func layoutUI() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
-        
-        [
-            titleLabel,
-            emailLabel, emailField,
-            passwordLabel, passwordField,
-            loginButton,
-            dividerLabel,
-            googleButton,
-            forgotPasswordButton,
-            footerLabel, signupButton
-        ].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview($0)
+        [titleLabel, emailLabel, emailField, passwordLabel, passwordField, loginButton, dividerLabel, googleButton, forgotPasswordButton, footerLabel, signupButton]
+            .forEach { sub in
+            sub.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(sub)
         }
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         navigationItem.backButtonTitle = ""
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         signupButton.addTarget(self, action: #selector(signup), for: .touchUpInside)

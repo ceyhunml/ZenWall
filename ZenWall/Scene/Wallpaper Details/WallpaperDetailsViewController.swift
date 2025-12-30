@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelegate {
+final class WallpaperDetailsViewController: BaseViewController, UIScrollViewDelegate {
     
     // MARK: - UI Elements
     private lazy var backgroundImageView: UIImageView = {
@@ -16,7 +16,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         iv.clipsToBounds = true
         iv.isOpaque = true
         iv.backgroundColor = .clear
-        iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
     
@@ -37,7 +36,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         sv.layer.masksToBounds = true
         sv.isOpaque = true
         sv.backgroundColor = .clear
-        sv.translatesAutoresizingMaskIntoConstraints = false
         return sv
     }()
     
@@ -116,11 +114,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        applyTransparentNavBar()
-        setupUI()
-        setupBindings()
-        setupGestures()
-        viewModel.loadImage()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -136,8 +129,9 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     }
     
     // MARK: - Setup
-    private func setupUI() {
-        view.backgroundColor = .black
+    override func layoutUI() {
+        applyTransparentNavBar()
+        setupGestures()
         setupFavoriteButton()
         fullButton.addTarget(self, action: #selector(saveFullImage), for: .touchUpInside)
         lowButton.addTarget(self, action: #selector(saveLowImage), for: .touchUpInside)
@@ -209,6 +203,18 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
         ])
     }
     
+    override func bindViewModel() {
+        viewModel.onImageURL = { [weak self] url in
+            guard let self, let url else { return }
+            self.wallpaperImageView.setUnsplashImage(url)
+            self.backgroundImageView.setUnsplashImage(url)
+        }
+        viewModel.onFavoriteChanged = { [weak self] isFavorite in
+            self?.updateFavoriteIcon(isFavorite)
+        }
+        viewModel.loadImage()
+    }
+    
     private func setupFavoriteButton() {
         let button = UIBarButtonItem(
             image: UIImage(systemName: "heart"),
@@ -222,17 +228,6 @@ final class WallpaperDetailsViewController: UIViewController, UIScrollViewDelega
     
     @objc private func favoriteTapped() {
         viewModel.toggleFavorite()
-    }
-    
-    private func setupBindings() {
-        viewModel.onImageURL = { [weak self] url in
-            guard let self, let url else { return }
-            self.wallpaperImageView.setUnsplashImage(url)
-            self.backgroundImageView.setUnsplashImage(url)
-        }
-        viewModel.onFavoriteChanged = { [weak self] isFavorite in
-            self?.updateFavoriteIcon(isFavorite)
-        }
     }
     
     private func updateFavoriteIcon(_ isFavorite: Bool) {

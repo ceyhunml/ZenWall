@@ -11,11 +11,10 @@ final class SearchPhotosManager: SearchPhotosUseCase {
     
     private let manager = NetworkManager.shared
     
-    func searchPhotos(query: String, page: Int, completion: @escaping (SearchResponse?, String?) -> Void) {
-        manager.request(
-            url: UnsplashEndpoint.search(query: query, page: page).path,
-            model: SearchResponse.self,
-            completion: completion
+    func searchPhotos(query: String, page: Int) async throws -> SearchResponse {
+        
+        try await manager.request(
+            url: UnsplashEndpoint.search(query: query, page: page).path
         )
     }
 }

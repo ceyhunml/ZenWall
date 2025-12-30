@@ -38,8 +38,6 @@ class FavoritesViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCollectionView()
-        loadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,15 +46,16 @@ class FavoritesViewController: BaseViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    private func setupCollectionView() {
+    override func layoutUI() {
         title = "Favorites"
         navigationItem.largeTitleDisplayMode = .always
-        view.addSubview(collectionView)
-        view.addSubview(emptyLabel)
+        [collectionView, emptyLabel]
+            .forEach { sub in
+                sub.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(sub)
+            }
         collectionView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -68,10 +67,9 @@ class FavoritesViewController: BaseViewController {
         ])
     }
     
-    func loadData() {
+    override func bindViewModel() {
         viewModel.success = { [weak self] in
             guard let self else { return }
-
             self.collectionView.reloadData()
             self.refreshControl.endRefreshing()
             self.updateEmptyState()

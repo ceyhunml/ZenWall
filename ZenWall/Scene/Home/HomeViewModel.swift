@@ -62,20 +62,25 @@ final class HomeViewModel {
     
     func searchPhotos(query: String, page: Int = 1) {
         currentQuery = query
-        
-        searchManager.searchPhotos(query: query, page: page) { [weak self] data, error in
-            guard let self else { return }
-            
-            if let data {
-                if page == 1 {
-                    self.photos = data.results ?? []
-                } else {
-                    self.photos.append(contentsOf: data.results ?? [])
+        Task {
+            do {
+                let data = try await searchManager.searchPhotos(
+                    query: query,
+                    page: page
+                )
+                await MainActor.run {
+                    if page == 1 {
+                        self.photos = data.results ?? []
+                    } else {
+                        self.photos.append(contentsOf: data.results ?? [])
+                    }
+                    self.currentPage = page
+                    self.success?()
                 }
-                self.currentPage = page
-                self.success?()
-            } else if let error {
-                self.error?(error)
+            } catch {
+                await MainActor.run {
+                    self.error?(error.localizedDescription)
+                }
             }
         }
     }

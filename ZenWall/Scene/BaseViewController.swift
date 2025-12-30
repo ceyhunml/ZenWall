@@ -12,6 +12,8 @@ class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupGradientBackground()
+        bindViewModel()
+        layoutUI()
         hideKeyboardWhenTappedAround()
     }
     
@@ -26,4 +28,8 @@ class BaseViewController: UIViewController {
         
         view.layer.addSublayer(gradient)
     }
+    
+    func bindViewModel() {}
+    
+    func layoutUI() {}
 }
