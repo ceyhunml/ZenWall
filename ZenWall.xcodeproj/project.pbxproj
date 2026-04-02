@@ -16,8 +16,19 @@
 		61B66CCE2ED6F55400A30514 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 61B66CCD2ED6F55400A30514 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		61D8BB552F0D62FC00CAB7FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6173ADFB2EBF232700C613A9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6173AE022EBF232700C613A9;
+			remoteInfo = ZenWall;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		6173AE032EBF232700C613A9 /* ZenWall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZenWall.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		61D8BB512F0D62FC00CAB7FA /* ZenWallTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZenWallTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,6 +50,11 @@
 			path = ZenWall;
 			sourceTree = "<group>";
 		};
+		61D8BB522F0D62FC00CAB7FA /* ZenWallTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ZenWallTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +72,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		61D8BB4E2F0D62FC00CAB7FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -63,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				6173AE052EBF232700C613A9 /* ZenWall */,
+				61D8BB522F0D62FC00CAB7FA /* ZenWallTests */,
 				6173AE042EBF232700C613A9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				6173AE032EBF232700C613A9 /* ZenWall.app */,
+				61D8BB512F0D62FC00CAB7FA /* ZenWallTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,6 +132,29 @@
 			productReference = 6173AE032EBF232700C613A9 /* ZenWall.app */;
 			productType = "com.apple.product-type.application";
 		};
+		61D8BB502F0D62FC00CAB7FA /* ZenWallTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61D8BB572F0D62FC00CAB7FA /* Build configuration list for PBXNativeTarget "ZenWallTests" */;
+			buildPhases = (
+				61D8BB4D2F0D62FC00CAB7FA /* Sources */,
+				61D8BB4E2F0D62FC00CAB7FA /* Frameworks */,
+				61D8BB4F2F0D62FC00CAB7FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				61D8BB562F0D62FC00CAB7FA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				61D8BB522F0D62FC00CAB7FA /* ZenWallTests */,
+			);
+			name = ZenWallTests;
+			packageProductDependencies = (
+			);
+			productName = ZenWallTests;
+			productReference = 61D8BB512F0D62FC00CAB7FA /* ZenWallTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -119,6 +167,10 @@
 				TargetAttributes = {
 					6173AE022EBF232700C613A9 = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					61D8BB502F0D62FC00CAB7FA = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 6173AE022EBF232700C613A9;
 					};
 				};
 			};
@@ -143,12 +195,20 @@
 			projectRoot = "";
 			targets = (
 				6173AE022EBF232700C613A9 /* ZenWall */,
+				61D8BB502F0D62FC00CAB7FA /* ZenWallTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6173AE012EBF232700C613A9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		61D8BB4F2F0D62FC00CAB7FA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -165,7 +225,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		61D8BB4D2F0D62FC00CAB7FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		61D8BB562F0D62FC00CAB7FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6173AE022EBF232700C613A9 /* ZenWall */;
+			targetProxy = 61D8BB552F0D62FC00CAB7FA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6173AE172EBF232A00C613A9 /* Debug */ = {
@@ -361,6 +436,42 @@
 			};
 			name = Release;
 		};
+		61D8BB582F0D62FC00CAB7FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 37K68STLJ2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jeyhun.mammadli.ZenWallTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZenWall.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ZenWall";
+			};
+			name = Debug;
+		};
+		61D8BB592F0D62FC00CAB7FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 37K68STLJ2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.jeyhun.mammadli.ZenWallTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZenWall.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ZenWall";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -378,6 +489,15 @@
 			buildConfigurations = (
 				6173AE172EBF232A00C613A9 /* Debug */,
 				6173AE182EBF232A00C613A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		61D8BB572F0D62FC00CAB7FA /* Build configuration list for PBXNativeTarget "ZenWallTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61D8BB582F0D62FC00CAB7FA /* Debug */,
+				61D8BB592F0D62FC00CAB7FA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
