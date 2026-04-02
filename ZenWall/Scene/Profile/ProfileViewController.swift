@@ -177,7 +177,8 @@ final class ProfileViewController: BaseViewController {
             makeRow(icon: "hand.thumbsup", title: "Rate ZenWall", action: #selector(rateApp)),
             makeRow(icon: "lock", title: "Privacy Policy", action: #selector(openPrivacyPolicy)),
             makeRow(icon: "arrow.backward.square", title: "Sign Out",
-                    isDestructive: true, action: #selector(signOutTapped))
+                    isDestructive: true, action: #selector(signOutTapped)),
+            makeRow(icon: "trash", title: "Delete Account", isDestructive: true, action: #selector(deleteAccountTapped))
         ].forEach { listContainer.addArrangedSubview($0) }
         
         title = "Profile"
@@ -251,6 +252,37 @@ final class ProfileViewController: BaseViewController {
             })
         }
     }
+
+    // MARK: - Delete Account
+    @objc private func deleteAccountTapped() {
+        showDestructiveAlert(
+            title: "Delete Account",
+            message: "This will permanently delete your account and data. Continue?",
+            destructiveTitle: "Delete"
+        ) {
+            FirebaseAdapter.shared.deleteCurrentUser { [weak self] error in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    if let error {
+                        self.alertFor(title: "Delete Failed", message: error)
+                        return
+                    }
+                    // Navigate to login/root after deletion
+                    guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                          let delegate = scene.delegate as? SceneDelegate,
+                          let window = delegate.window else { return }
+
+                    UIView.transition(with: window,
+                                      duration: 0.5,
+                                      options: .transitionFlipFromRight,
+                                      animations: {
+                        window.rootViewController = UINavigationController(rootViewController: LoginViewController())
+                        window.makeKeyAndVisible()
+                    })
+                }
+            }
+        }
+    }
     
     private func openCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else { return }
@@ -321,7 +353,7 @@ extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationCo
                 info[.originalImage] as? UIImage else { return }
         
         guard let data = image.jpegData(compressionQuality: 0.8) else { return }
-        guard let uid = UserDefaults.standard.string(forKey: "userId") else { return }
+        guard let uid = UserSessionManager.shared.userId else { return }
         
         AuthManager.shared.uploadProfileImage(uid: uid, imageData: data) { [weak self] url, error in
             guard let self else { return }
@@ -357,7 +389,7 @@ extension ProfileViewController: PHPickerViewControllerDelegate {
             guard let self,
                   let image = image as? UIImage,
                   let data = image.jpegData(compressionQuality: 0.8),
-                  let uid = UserDefaults.standard.string(forKey: "userId")
+                  let uid = UserSessionManager.shared.userId
             else { return }
             
             AuthManager.shared.uploadProfileImage(uid: uid, imageData: data) { url, error in
@@ -375,3 +407,4 @@ extension ProfileViewController: PHPickerViewControllerDelegate {
         }
     }
 }
+

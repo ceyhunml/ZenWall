@@ -12,7 +12,7 @@ class LoginViewModel {
     
     private let manager = AuthManager.shared
     
-    var successForSignIn: ((String) -> Void)?
+    var successForSignIn: (() -> Void)?
     var successForReset: (() -> Void)?
     var failure: ((String) -> Void)?
     
@@ -20,7 +20,7 @@ class LoginViewModel {
         manager.signIn(email: email, password: password) { userId, error  in
             if let userId {
                 UserDefaults.standard.set(userId, forKey: "userId")
-                self.successForSignIn?(userId)
+                self.successForSignIn?()
             } else {
                 self.failure?(error ?? "")
             }

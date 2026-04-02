@@ -19,6 +19,12 @@ final class FirebaseAdapter: BackendService {
     
     private init() {}
     
+    // Centralize session persistence for successful authentication
+    private func persistLogin(userId: String) {
+        UserSessionManager.shared.userId = userId
+        UserSessionManager.shared.isLoggedIn = true
+    }
+    
     // MARK: - Configure
     func configure() {
         FirebaseApp.configure()
@@ -78,7 +84,7 @@ final class FirebaseAdapter: BackendService {
                 completion(nil, "User ID not found")
                 return
             }
-            UserSessionManager.shared.userId = userId
+            self.persistLogin(userId: userId)
             
             self.saveUserData(userId: userId,
                               fullname: fullname,
@@ -142,7 +148,7 @@ final class FirebaseAdapter: BackendService {
                     return
                 }
                 
-                UserSessionManager.shared.userId = userId
+                self.persistLogin(userId: userId)
                 
                 self.saveUserData(
                     userId: userId,
@@ -195,8 +201,6 @@ final class FirebaseAdapter: BackendService {
             "favorites": [],
             "createdAt": FieldValue.serverTimestamp()
         ]
-        
-        UserSessionManager.shared.isLoggedIn = true
         
         Firestore.firestore().collection("users").document(userId).setData(data, merge: true) { error in
             if let error {
@@ -302,5 +306,35 @@ final class FirebaseAdapter: BackendService {
                 
                 completion(favorites, nil)
             }
+    }
+    
+    // MARK: - Delete Account
+    /// Deletes the currently signed-in user's account from Firebase Auth and their user document in Firestore.
+    /// - Parameter completion: Called on completion with an optional error message (nil on success).
+    func deleteCurrentUser(completion: @escaping (String?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            completion("No authenticated user")
+            return
+        }
+
+        let uid = user.uid
+        let userDocRef = Firestore.firestore().collection("users").document(uid)
+
+        // First delete Firestore user document (ignore not-found errors), then delete Auth user
+        userDocRef.delete { docError in
+            // Proceed to delete auth user regardless of Firestore deletion outcome
+            user.delete { authError in
+                if let authError {
+                    completion(authError.localizedDescription)
+                    return
+                }
+
+                // Clear local session
+                UserSessionManager.shared.userId = nil
+                UserSessionManager.shared.isLoggedIn = false
+
+                completion(nil)
+            }
+        }
     }
 }

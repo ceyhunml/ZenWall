@@ -178,8 +178,7 @@ final class LoginViewController: BaseViewController {
         viewModel.successForReset = {
             self.alertFor(title: "Email Sent!", message: "Check your Inbox!")
         }
-        viewModel.successForSignIn = { userId in
-            UserDefaults.standard.set(userId, forKey: "userId")
+        viewModel.successForSignIn = {
             UserSessionManager.shared.isLoggedIn = true
             if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
                 if let window = sceneDelegate.window {
@@ -279,9 +278,7 @@ final class LoginViewController: BaseViewController {
             
             guard let self else { return }
             
-            if let userId {
-                UserDefaults.standard.set(userId, forKey: "userId")
-                UserSessionManager.shared.isLoggedIn = true
+            if let _ = userId {
                 if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
                     if let window = sceneDelegate.window {
                         UIView.transition(with: window, duration: 0.5, options: .transitionFlipFromRight, animations: {
@@ -308,3 +305,4 @@ final class LoginViewController: BaseViewController {
         coordinator.start()
     }
 }
+
