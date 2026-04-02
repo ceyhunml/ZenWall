@@ -319,21 +319,28 @@ final class FirebaseAdapter: BackendService {
 
         let uid = user.uid
         let userDocRef = Firestore.firestore().collection("users").document(uid)
+        let storageRef = Storage.storage().reference().child("profile_images/\(uid).jpg")
 
-        // First delete Firestore user document (ignore not-found errors), then delete Auth user
-        userDocRef.delete { docError in
-            // Proceed to delete auth user regardless of Firestore deletion outcome
-            user.delete { authError in
-                if let authError {
-                    completion(authError.localizedDescription)
-                    return
-                }
-
-                // Clear local session
+        // Helper to finalize: clear local session and complete
+        func finalize(with error: String?) {
+            if error == nil {
                 UserSessionManager.shared.userId = nil
                 UserSessionManager.shared.isLoggedIn = false
+            }
+            completion(error)
+        }
 
-                completion(nil)
+        // Delete Firestore doc (ignore not-found), then delete Storage image (ignore not-found), then delete Auth user
+        userDocRef.delete { _ in
+            // Attempt to delete profile image; proceed regardless of error (it might not exist)
+            storageRef.delete { _ in
+                user.delete { authError in
+                    if let authError {
+                        finalize(with: authError.localizedDescription)
+                        return
+                    }
+                    finalize(with: nil)
+                }
             }
         }
     }

@@ -33,4 +33,6 @@ protocol BackendService {
     func updateUserPhotoURL(uid: String,
                             photoURL: String,
                             completion: @escaping (String?) -> Void)
+    
+    func deleteCurrentUser(completion: @escaping (String?) -> Void)
 }
